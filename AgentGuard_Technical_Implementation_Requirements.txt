@@ -1,0 +1,1032 @@
+AGENTGUARD
+TECHNICAL IMPLEMENTATION REQUIREMENTS & TEAM HANDOFF
+QwenWork x Hashmeta AI One-Person Company Hackathon 2026
+Track 2: AI Governance, Security & Decision-Making
+Version 1.0 | 17 November 2026 | Proposed MVP specification
+======================================================================
+
+0. EXECUTIVE SUMMARY
+----------------------------------------------------------------------
+Build a governance layer that allows a small business to delegate customer
+negotiations to QwenWork agents while independently assessing the economic
+consequences of their proposed decisions before they make commitments.
+
+The agent interprets open-ended customer requests and generates candidate
+business strategies. A deterministic compiler combines the proposed strategy,
+current business state and a human-approved domain knowledge base into a
+probabilistic state-transition model. PAT (Process Analysis Toolkit), using
+its PCSP module, evaluates the model. A decision engine translates the result
+into expected economic utility and authorizes a suitable strategy or abstains.
+An audit agent and an explainable AI (XAI) component provide a reviewable
+record of the decision, supporting evidence and financial trade-offs.
+
+Core design principle: different business risks are represented as states,
+transitions and monetary consequences, NOT as separately generated governance
+assertions. The runtime verifier uses ONE FIXED economic-utility query for
+all supported negotiations. A new risk should generally extend the approved
+domain knowledge, not require a new verification objective.
+
+The engine is intended to be industry-independent; the hackathon MVP is a
+travel-agency implementation inspired by Mesho Travel & Tours, an existing
+Hashmeta AI CMS customer. Hashmeta reports its first ChatGPT-originated
+booking inquiry within 14 days and 29 form submissions by 19 September 2026
+[1]. The project investigates the NEXT stage: converting such inquiries into
+safely governed commercial decisions. No actual Mesho financial information,
+customer incidents or private supplier data are assumed. Demo data are synthetic.
+
+The organizer requires genuine QwenWork platform use (20% of judging) and a
+website built with Hashmeta AI (15%) [2]. Both are essential deliverables,
+not optional branding. Use QwenWork for the actual agent workflows and
+Hashmeta AI CMS for the public product website and demo entry point.
+
+Submission: 23 November 2026; three-minute demo video [2]. The team has
+approximately six days from kickoff. This is a prototype, not a claim of
+production-grade, comprehensive legal or cybersecurity assurance.
+
+1. TARGET OUTCOME AND SCOPE
+----------------------------------------------------------------------
+1.1 Customer problem
+A small travel agency receives a request to change an existing booking at
+no extra cost. It must reason about supplier availability, amendment fees,
+refund obligations, customer retention and potential business losses, but
+its founder cannot manually inspect every interaction. Static discount
+limits do not capture the trade-offs across possible future outcomes.
+
+1.2 Target behaviour
+For a customer request, the system shall:
+  a. Interpret the request, resolve the relevant booking and extract goals.
+  b. Propose alternative strategies using known operations.
+  c. Retrieve trusted business data and approved consequences/probabilities.
+  d. Compile each strategy into a bounded probabilistic transition system.
+  e. Evaluate the expected utility using a single fixed PAT assertion.
+  f. Compare candidate strategies against the applicable baseline and the
+     owner's risk appetite; select, counteroffer, reject or escalate.
+  g. Execute or communicate only the exact approved commitment.
+  h. Record decision provenance and provide an understandable explanation.
+
+1.3 MVP priorities
+MUST: One travel agency; a versioned knowledge pack; QwenWork customer-facing
+agent; QwenWork-assisted knowledge acquisition; typed intermediate
+representation (IR); deterministic compiler; actual PAT PCSP execution; one
+utility query; comparison against rejection/status quo; safe execution gate;
+structured audit trail; XAI summary; published Hashmeta AI website.
+
+SHOULD: Independent risk-review agent; approved parameter scenarios; review
+UI; two or three candidate strategies; replayable audit records; combined
+unseen customer requests; automated sensitivity summaries.
+
+COULD: Multiple business contexts; richer uncertainty models; ongoing
+knowledge discovery; real supplier/CRM integrations; concurrency; insurance;
+advanced planning or policy synthesis. These are not release blockers.
+
+Do not build a general CRM, chatbot platform, booking/payment processor,
+unrestricted AI compliance engine or arbitrary natural-language-to-PAT
+generator. Simulate supplier operations and commitments for the demo.
+
+2. SYSTEM ARCHITECTURE AND TRUST BOUNDARY
+----------------------------------------------------------------------
+
+  Hashmeta AI CMS website (public product/demo entry)
+                       |
+                       v
+  Customer request -> QwenWork customer / planning agent
+                       | structured intent + candidate plan(s)
+                       v
+  Governance connector (MCP or supported QwenWork tool interface)
+                       |
+                       v
+  Orchestrator -> IR validator -> deterministic compiler -> PAT adapter
+                       ^                    ^                   |
+                       |                    |                   v
+  Trusted business state store      Approved knowledge pack    Utility result
+                       |                                        |
+                       +-----------> Decision engine <----------+
+                                             |
+                                  Authorization / execution gate
+                                             |
+                                    Approved outward response
+
+  Knowledge workflow: QwenWork research agent -> proposed knowledge ->
+                      independent review (optional) -> human approval
+                      -> immutable version of knowledge pack
+
+  Audit workflow: every stage -> structured event log -> XAI / audit agent
+                  -> private founder review dashboard
+
+Trust rules:
+- Agent output is untrusted input, not executable code or authoritative data.
+- Compiler, model checker adapter, utility and authorization logic run on
+  the backend. The agent cannot change their semantics or threshold.
+- Live prices, availability, customer identity and approved assumptions are
+  retrieved independently from trusted stores. In the MVP, these are mocks.
+- Only approved knowledge and supported operation templates enter a model.
+- ONLY the guarded executor may make binding offers or update bookings.
+- Customer utterances, supplier documents and web pages are untrusted text,
+  never instructions capable of modifying policies, tools or credentials.
+- External e-mail, payment, write-enabled CRM and booking connectors must
+  not be directly available to the sales agent in the MVP.
+- Where QwenWork cannot technically enforce output routing, its chat is an
+  internal drafting interface only. The backend customer channel displays
+  only a guarded result. Never claim stronger enforcement than demonstrated.
+
+3. STEP 1: ESTABLISH PLATFORM ACCESS AND A WALKING SKELETON
+----------------------------------------------------------------------
+Owner: QwenWork/integration engineer + compiler engineer. Priority: MUST.
+
+A. Set up QwenWork hackathon workspace and identify allowed Skills, connectors,
+   custom MCP service configuration, network access and execution environment.
+   QwenWork documentation describes agent sessions, Skills and connectors,
+   including custom MCP services on desktop [3-6]. Availability is edition-
+   and account-dependent; test actual access on Day 1.
+B. Install PAT 3.5 (or available compatible version), enable PCSP module and
+   verify console invocation and result format. Establish a dedicated runner
+   (e.g. Windows host/VM with PAT installed). Do not assume Linux support.
+C. Create a tiny deterministic two-branch probability model and verify an
+   expected result. Test a weighted pcase example and the documented
+   "reaches ... with pmin" syntax [7-9]. Pin the working PAT version.
+D. Start a backend governance service and expose a harmless health/test tool
+   through QwenWork. Demonstrate an actual QwenWork session invoking it.
+E. Create Hashmeta AI CMS site immediately and confirm publishing access.
+
+Integration fallback: if custom MCP is unavailable, use a supported platform
+mechanism (e.g. a QwenWork Skill invoking an approved local service or file
+handoff). If no automated interface exists, use explicit structured export/
+import from an actual QwenWork session for the demo and label that limitation.
+Do not pass off generic Qwen API usage or a standalone chatbot as QwenWork.
+
+Definition of done: actual QwenWork workflow -> backend -> PAT -> result
+visible in QwenWork or an explicitly disclosed integration fallback; published
+Hashmeta AI site shell; exact run commands recorded in README.
+
+4. STEP 2: DEFINE THE DOMAIN-INDEPENDENT DATA CONTRACTS
+----------------------------------------------------------------------
+Owner: compiler/backend engineer. Priority: MUST.
+
+4.1 Abstract state (typed, finite model)
+State must represent enough information to evaluate downstream consequences,
+without storing arbitrary customer language or entire documents in PAT.
+Suggested dimensions:
+- Finance: incremental revenue, supplier costs, losses, refunds, exposure;
+  use signed integer minor currency units, preferably cents.
+- Resources: quantities, reservations, capacity, availability/confirmation.
+- Commitments: service status, agreed dates, cancellation terms, obligations.
+- Payments: amount paid, amount due, payment status, deadlines.
+- Time: bounded time buckets or relative days, not an unbounded clock.
+- Event status: flags/counters needed to derive subsequent consequences.
+- Economic value accumulator; terminal/finished status.
+
+Model only a transaction and bounded relevant context for the MVP. Shared
+business liquidity or inventory may be included as read-only inputs, but
+avoid claiming portfolio-level guarantees without modelling interactions.
+Normalize currency and time on the backend. Validate ranges and reject
+arithmetic overflow. Store data version, effective date and provenance.
+
+4.2 Intermediate representation (agent output contract)
+The agent returns strictly schema-validated JSON, not CSP#, arbitrary Python,
+SQL, executable formulas, raw probability values or authorization commands.
+Example (conceptual):
+
+  {
+    "request_id": "REQ-001",
+    "booking_id": "B001",
+    "goal": {"type": "amend_booking", "date_offset_days": 30},
+    "customer_constraints": {"max_extra_charge_cents": 0},
+    "needs_clarification": false,
+    "candidate_strategies": [
+      {"strategy_id": "keep_original", "plan": {"op": "KEEP_BOOKING"}},
+      {"strategy_id": "conditional_amend", "plan": {
+        "op": "SEQUENCE", "steps": [
+          {"op": "REQUEST_AMENDMENT", "booking_ref": "B001",
+           "date_offset_days": 30},
+          {"op": "IF", "condition": {"predicate": "AMENDMENT_APPROVED"},
+           "then": {"op": "CONFIRM_AMENDMENT"},
+           "else": {"op": "KEEP_BOOKING"}}
+        ]}}
+    ]
+  }
+
+Operation names and condition references are registered identifiers. This
+example is a contract sketch; the team should freeze the exact schema on
+Day 1. The agent may also suggest a surcharge or alternative date, but an
+offer exceeding the customer's constraints must be labelled a counteroffer
+requiring consent, not an accepted transaction. Booking ID must be resolved
+from the authorized session, not trusted merely because the agent wrote it.
+
+4.3 Plan grammar
+MVP: Operation(args), Sequence(steps), Conditional(predicate, then, else).
+Allow a contingent fallback based on an observable supplier response. Use a
+finite DAG/unrolled plan and cap length, branches and recursion depth. No
+arbitrary loops, unbounded retries, arbitrary code or unregistered predicates.
+Optional: bounded Choice/Parallel, with explicitly defined scheduler semantics.
+
+4.4 Result contract
+Return request/strategy/model IDs; status (APPROVED, COUNTEROFFER, REJECTED,
+CLARIFY, NEEDS_REVIEW or ERROR); expected utility or conservative interval;
+relative baseline; decision threshold; input/knowledge versions; approved
+terms (if any); diagnostics; audit ID; authorization token (executor only).
+Use schema validation and canonical serialization on both sides of the tool.
+
+Definition of done: agent-produced JSON validates; malformed, missing,
+unsupported or unauthorized requests fail closed; new combinations of valid
+operations require no changes to the IR grammar or economic query.
+
+5. STEP 3: BUILD THE TRAVEL DOMAIN KNOWLEDGE PACK
+----------------------------------------------------------------------
+Owner: knowledge/agent engineer + business reviewer. Priority: MUST.
+
+5.1 Separate engine from data
+The compiler core owns composition and target-language semantics. The domain
+pack supplies the concrete resource definitions, operation templates, causal
+consequences, statistical parameters, valuations, and source information.
+Travel assumptions must not be scattered through compiler code or prompts.
+A new industry requires a new validated pack and potentially new operations,
+not a new utility objective. Generalizability is architectural, not yet
+empirically demonstrated across industries.
+
+5.2 Knowledge records
+Each assumption: ID, type (fact/statistic/causal link/valuation/preference),
+value or range, units, conditional context, source or fixture label, sample
+size/time period (if applicable), confidence/limitations, approval status,
+approver, effective/expiry date and version. Keep source excerpts or links.
+Example (synthetic fixture, not a real supplier statistic):
+
+  id: peak_amendment_available
+  type: conditional_probability
+  context: {season: peak, days_until_departure: [0, 7]}
+  value: 0.80
+  approved_range: [0.70, 0.90]
+  conditioned_on: request_amendment
+  source: synthetic_demo_fixture_v1
+  evidence_status: synthetic
+  approval_status: approved_for_demo
+
+Approval of an estimate is NOT statistical validation. Public data may inform
+priors, but does not establish a particular supplier's reliability. Missing
+values should be marked UNKNOWN, never silently replaced with 0 or an LLM
+invented number. Separate demo approval from production approval.
+
+5.3 Minimal data set
+Create a fictional agency with 2-3 packages, bookings, dated resource slots,
+supplier amendment policies, refund/compensation terms and current costs.
+Provide 2-3 seasonal contexts (normal/peak and lead-time buckets), conditional
+supplier success/failure probabilities and monetized recovery consequences.
+Include a business owner utility profile with reference baseline, minimum
+acceptable utility gain, risk aversion and valuation horizon. Use one currency.
+
+5.4 Consequence library (not assertion library)
+Examples: supplier amendment succeeds/fails; price surcharge; inability to
+fulfil; compensation/refund; customer churn; legal claim; payment default.
+For every event define trigger, conditional context, outcome branches,
+probability references, state effects, economic deltas, downstream events,
+and applicability/bounds. Example:
+
+  event: service_failure
+  trigger: committed_service_unavailable
+  branches:
+    - outcome: recovery_required
+      probability_ref: p_recovery_given_failure
+      effects: [record_recovery, add_loss(recovery_cost)]
+    - outcome: no_recovery
+      probability_ref: complement
+  downstream: [customer_retention_outcome, legal_claim_outcome]
+
+This is a schema sketch: downstream event semantics must specify whether they
+are sequential, mutually exclusive or jointly possible. Do not imply they
+are independent unless the approved knowledge explicitly says so. Encode
+conditional probabilities and shared causes in state. Define whether a
+consequence accrues once or per occurrence. Avoid counting a refund as both
+lost revenue and an additional loss. Future lost business should use a bounded
+horizon and contribution/profit estimate, not gross sales double-counted.
+
+5.5 Coverage and human review
+For each operation, maintain an approved list of required risk families and
+causal dependencies (cost, availability, cash/payment, fulfilment, liability,
+retention, opportunity cost). Mark a family covered, explicitly not applicable
+with justification, or unresolved. Recursively expand known applicable events.
+Unresolved material risks, missing estimates, expired evidence or operation
+semantics outside the pack produce NEEDS_REVIEW. Approved exclusions and
+bounded horizons are logged. This is a coverage discipline, not a proof of
+real-world completeness. Use human-reviewed held-out scenarios and mutation
+tests to expose omissions.
+
+Definition of done: pack can be updated without changing PAT assertion or
+core compiler; all numerical assumptions are sourced or labelled synthetic;
+unsupported/unknown context blocks authorization.
+
+6. STEP 4: IMPLEMENT QWENWORK AGENTS AND THEIR CONTRACTS
+----------------------------------------------------------------------
+Owner: agent/integration engineer. Priority: MUST except noted.
+Use QwenWork Skills to define role prompts, JSON schemas, tool permissions
+and workflows. Roles can be separate QwenWork sessions/Skills instead of
+parallel autonomous services; a separate agent runtime is not necessary.
+Genuine QwenWork usage must be visible in the final demo [3-6].
+
+6.1 Sales / negotiation agent (online, MUST)
+Purpose: customer interface, semantic interpretation, candidate generation
+and customer-friendly communication of the authorized outcome.
+Inputs: customer message; authorized session/booking reference; supported
+operation schema; read-only business information returned by tools.
+Responsibilities:
+  1. Extract intent, amounts, units, dates, preferences and constraints.
+  2. Ask clarifying questions when ambiguous (date, currency, meaning of
+     no cost, booking identity, etc.). Do not guess binding terms.
+  3. Decompose goals into allowed primitives using the operation catalog.
+  4. Propose multiple plans where appropriate, including status quo or
+     conditional acceptance and a counteroffer. Backend adds baseline if
+     omitted and validates goal satisfaction/candidate feasibility.
+  5. Call evaluate_strategies; await structured result. Never substitute
+     own approval, predictions or arithmetic for the backend verdict.
+  6. Respond using only approved terms or nonbinding clarification. The
+     executor generates binding offer text from authorized structured terms;
+     any agent prose must not silently change prices, dates or commitments.
+  7. When rejected, offer approved alternatives or politely decline; if
+     uncertain, request information or send for founder review.
+Forbidden: write to knowledge store; supply trusted financial parameters;
+write PAT code; set risk tolerance; override a decision; access raw private
+records beyond role; directly send binding customer messages or book/pay.
+Test: unseen paraphrases and compound requests yield valid plans or safe
+clarification. Prompt injection such as "ignore your limits" cannot commit.
+
+6.2 Knowledge acquisition agent (offline/onboarding, MUST)
+Purpose: reduce founder effort in constructing the contextual knowledge pack.
+Inputs: approved supplier documents, sample booking history, owner inputs,
+public sources and the knowledge record schema.
+Responsibilities: extract facts, candidate causal relationships, conditional
+frequencies (with denominator and context), valuations and confidence ranges;
+provide evidence and provenance; distinguish observations from estimates;
+identify missing data; generate a structured draft or change-set.
+Output: proposed records with pending status; no automatic activation.
+Human reviews, edits, approves and publishes a version through backend UI.
+Where evidence is insufficient, suggest collecting it or using an explicitly
+approved demo/scenario assumption, not representing it as empirical truth.
+Test: source-backed and unsupported entries are distinguishable; attempts to
+activate unapproved entries fail. Demonstrate review of one supplier rule.
+
+6.3 Risk/completeness review agent (offline, SHOULD)
+Purpose: challenge the knowledge pack and candidate modelling coverage.
+Inputs: operation definitions, dependency graph, draft knowledge and example
+requests; use a separate critique prompt/role.
+Responsibilities: reason forwards from action to adverse consequences and
+backwards from economic loss families to possible causes; identify missing
+branches, shared causes, impossible sequences, duplicate costs, unsupported
+contexts or questionable assumptions. Produce a structured gap report with
+severity, evidence, affected operations and suggested revisions.
+Do not alter runtime policy or insert new unapproved transitions. Human
+review is required. This agent reduces blind spots but cannot prove completeness.
+Test: intentionally remove supplier cancellation or refund dependency; review
+agent should propose it, and deterministic coverage check should block use
+if the pack declares that dependency mandatory. If schedule is tight, merge
+this role into the knowledge agent with a separate review pass.
+
+6.4 Decision audit agent (online/post-decision, MUST; small component)
+Purpose: capture and summarize the observable decision process for the founder.
+Inputs: backend audit events, candidate strategies, applied assumptions,
+model-checking results, decision rule, execution outcome, approved terms.
+Output: structured decision journal and concise explanation with source IDs.
+Backend instrumentation, not the agent, is the primary source of audit facts.
+The agent summarizes observable actions, tool calls, inputs, alternatives,
+results and stated rationale; do NOT request or store hidden chain-of-thought.
+No ability to change verdicts, records, probabilities or business state.
+If an explanation fails, decision still follows the verifier; retain raw
+record and display a deterministic fallback. Avoid private data exposure.
+Test: reconstruct why a request was approved/rejected from log IDs and verify
+that cited numbers equal the recorded values. No fabricated explanations.
+
+6.5 Suggested QwenWork connector tools (names illustrative)
+- get_operation_catalog(): schema + supported operations (read only).
+- get_booking_context(booking_ref): minimal authorized data (read only).
+- evaluate_strategies(request_json): validation, compilation, PAT, verdict.
+- get_authorized_response(decision_id): approved wording/terms (session bound).
+- submit_knowledge_draft(records): create pending records, no publication.
+- get_decision_audit(decision_id): role-restricted, redacted evidence.
+- submit_risk_review(gaps): create pending review items (optional).
+Privileged commit and publish_knowledge operations are backend/human controlled,
+not exposed as unrestricted sales-agent tools. Expose MCP JSON schemas and
+return typed errors. Verify custom connector transport in the actual workspace;
+never assume an undocumented QwenWork webhook, multi-agent API or hook exists.
+
+7. STEP 5: IMPLEMENT ABSTRACT TRANSITION SEMANTICS
+----------------------------------------------------------------------
+Owner: compiler engineer. Priority: MUST.
+
+A transition is not a natural-language intent. It is a parameterized
+operation/event with explicit preconditions, possible successors, state
+updates and economic effects. The same semantics apply to many customer asks.
+Formal model: M = (S, s0, A, P, R), where S is finite state, s0 current state,
+A controlled operations, P conditional transition probabilities, and R signed
+financial increments. A candidate strategy fixes the agent's choices; external
+outcomes remain probabilistic or explicitly nondeterministic.
+
+7.1 Operation template contract
+Each operation includes: name/version; typed arguments; preconditions;
+read/write dependencies; required data refs; outcomes and probability refs;
+effects; emitted causal events; terminal/recovery rules; permitted context.
+Use a safe template AST or typed declarative expressions, not eval() or raw
+CSP# snippets from untrusted documents. Template authors are trusted engineers.
+Suggested examples:
+- ADJUST_PRICE (sets authorized proposed price; incremental discount/cost).
+- REQUEST_AMENDMENT (supplier response: success, surcharge, unavailable).
+- ACQUIRE_RESOURCE / RELEASE_RESOURCE (availability, fees, reservation status).
+- CONFIRM_AMENDMENT / KEEP_BOOKING (commit/fallback with accurate state).
+- TRANSFER_FUNDS or ISSUE_REFUND (payment success/failure, cost/revenue).
+- CREATE_COMMITMENT / SETTLE (if needed to express controlled completion).
+MVP implement only enough primitives for discount, amendment and a third
+request (e.g. upgrade or compound request); more are optional.
+
+7.2 Environmental events and causal composition
+For example, REQUEST_AMENDMENT may return a confirmed hold, unavailable or
+additional fee. A premature commitment can lead to service_failure, followed
+by refund/recovery, churn or legal claim; each event updates the state and
+value. Conditional acceptance instead tests an observed response and chooses
+an authorized fallback. The compiler, not the LLM, instantiates these branches.
+If one event affects later outcomes (peak season, loss of original reservation),
+preserve that dependency using state, not independently sampled marginals.
+Bind state transitions to real/simulated API behaviour and distinguish between
+reservation check, binding hold, and irrevocable booking.
+
+7.3 Economic accounting and utility
+Use V = sum of monetary increments over a clearly defined bounded horizon.
+Prefer incremental cash contribution/value relative to a common starting state
+for all candidate strategies, with consistent sunk costs and opportunity costs.
+For amendments compare against KEEP_BOOKING, not a new sale or arbitrary zero.
+For a loss, either reverse revenue or book the refund as a loss, not both.
+Translate churn to approved lost contribution/retention cost (bounded horizon).
+Use fixed-point integer units and explicit rounding; do not confuse gross
+revenue, profit, cash balance, liabilities and economic value.
+
+Utility is a configurable function U(V), supplied by the owner and stored in
+a validated profile. MVP example: U(V)=V for V>=0, U(V)=k*V for V<0, k>=1
+(e.g. k=3). Values and U bounds must be checked. This is a simple asymmetric
+loss-aversion model, not a comprehensive model of insolvency or expected
+wealth. Optional: utility based on ending liquidity/wealth, step penalty for
+loss exceeding capital or bounded piecewise-linear utility with stated units.
+Do not claim positive expected utility guarantees no loss. Legally prohibited,
+unauthorized or unsupported actions are excluded by separate execution and
+capability checks, not purchasable with sufficiently high expected returns.
+These are eligibility checks, not new economic PAT assertions.
+
+Definition of done: manually trace each operation, its possible successors,
+and economic increments; same pack supports combinations of primitives; no
+new request-specific PAT assertions or external ad hoc valuations.
+
+8. STEP 6: BUILD THE MODEL VERIFICATION COMPILER (CORE DELIVERABLE)
+----------------------------------------------------------------------
+Owner: compiler engineer + verification engineer. Priority: MUST.
+
+8.1 Compiler pipeline
+  Input: validated Plan IR, trusted state snapshot, approved knowledge pack,
+         utility profile, fixed evaluation horizon, parameter scenario.
+  Output: PCSP model, model manifest, model-to-domain event map, utility
+          bounds/normalization constants and provenance.
+
+Implement the following ordered passes:
+  1. Parse/type-check IR. Resolve supported actions and predicate IDs.
+  2. Bind references to a trusted snapshot (booking, supplier terms, dates,
+     resource IDs and price). Check customer consent and action eligibility.
+  3. Compute dependency closure over operation reads/writes, trigger rules,
+     downstream event dependencies and approved required risk families. Stop
+     on an unresolved dependency or unsupported semantics. Record the closure.
+  4. Instantiate parameterized transition templates. Resolve all numerical
+     parameters from the approved context; never from the agent's proposal.
+  5. Compose sequential/conditional actions with environmental branches into
+     a bounded transition graph. Include the status quo and recovery paths.
+     Track event occurrence to prevent duplicate application, and preserve
+     dependency state for correlated or conditional events.
+  6. Validate the composed graph: reachable state/transition integrity, all
+     local probabilities valid and normalized, no unhandled outcomes, finite
+     plan, no unintended deadlocks, utility bounded, every possible path
+     reaches a defined terminal outcome. A timeout or failed operation needs
+     an explicit terminal/fallback interpretation. Do not discard bad paths.
+  7. Attach incremental monetary effects, compute terminal value V and
+     terminal utility U(V); determine conservative utility bounds L and H.
+  8. Lower to PCSP, with synthetic economic-success transition per terminal
+     outcome (section 8.3). Generate exactly one fixed runtime assertion.
+  9. Store model text, graph/event-ID map, context/assumption IDs, bounds,
+     compiler version and content hash; send artifact to the PAT runner.
+
+The model is generated by deterministic software. There must be no free-form
+LLM generation of model semantics or assertions at runtime. Identical inputs
+and software versions shall produce the same canonical model and manifest.
+
+8.2 Graph lowering recommendation for the one-week MVP
+Use a finite acyclic graph as the compiler's internal verification IR.
+Each node is a typed business state plus a control location; each edge is a
+registered event with probability/choice and economic effect. Enumerate or
+memoize reachable states and emit one named PCSP process per reachable node.
+Partition outgoing edges into fixed deterministic, stochastic or explicitly
+nondeterministic groups. For a fixed strategy, conditional decisions follow
+actual observations, not future knowledge; resolve all agent-choice nodes.
+Encode environmental uncertainty using approved pcase weights. Group edges
+by conditional context so dependent events are not accidentally independent.
+
+For MVP, use an acyclic graph and path/state limits. If those limits are
+exceeded, abstain, never prune high-loss paths to manufacture a good score.
+Static unrolling permits literal integer pcase weights, even if the tested
+PAT version does not support dynamic weight expressions. In a later version,
+compile compositional templates directly into symbolic CSP processes to reduce
+explicit graph generation overhead. The MVP still runs PAT for the actual
+probability result; the state generator is not the authorization oracle.
+
+8.3 Single fixed utility assertion: expected utility via reachability
+----------------------------------------------------------------------
+PAT PCSP documents probabilistic reachability (pmin/pmax/prob) and weighted
+pcase, but not a native expected-utility reward query in the cited manual
+[7-9]. A simple reachability query on "profit >= 0" measures probability of
+profit, NOT expected profit. To retain PAT and a single assertion, use the
+following mathematical reduction.
+
+Let X = U(V_terminal) be terminal utility, bounded by L <= X <= H.
+Use common bounds across the candidate strategies in a single decision when
+practical; store bounds in the manifest. If H > L, add a synthetic final
+Bernoulli step at EVERY terminal business outcome:
+
+             q(X) = (X - L) / (H - L)
+
+  terminal outcome X -- probability q(X) --> economicSuccess = true
+                     -- probability 1-q --> economicSuccess = false
+
+The synthetic step is not a real-world event. It is a reduction from an
+expected-utility query to a probabilistic reachability query. By total
+expectation, for any fixed strategy with almost-sure termination:
+
+    P(economicSuccess) = (E[X] - L) / (H - L)
+    E[X] = L + (H - L) * P(economicSuccess)
+
+For bounded nondeterministic environmental branches, pmin computes the
+minimum expected utility over the schedulers permitted by the model,
+assuming all model paths terminate and the same bounds apply. Do not use
+pmax to authorize optimistically; fixed agent choices are already encoded
+in the candidate strategy. Disclose semantics of remaining nondeterminism;
+MVP preferably fixes a strategy and uses only probabilistic environment
+branches. A model checker explores this model, not real-world possibilities
+outside its assumptions.
+
+All generated production models shall contain the same query:
+
+    #assert Business() reaches economicSuccess with pmin;
+
+Here economicSuccess is a declared boolean/predicate that is initially false
+and set only at a synthetic success terminal. Use the same process/predicate
+names and assertion text. No separate customerChurn, legalDispute, service
+failure or availability assertions at runtime. These are intermediate events
+and monetary effects. Extra assertions may be used in isolated compiler test
+fixtures only, not as the decision framework.
+
+Encoding: if utility is integer-valued, emit weighted choices with weights
+X-L and H-X (reduce by their greatest common divisor); for exact zero/one
+probabilities emit deterministic paths, not invalid zero-weight choices.
+If H=L, encode a deterministic success terminal and have the decoder return
+L regardless of probability; retain a single fixed query. Reject invalid
+bounds or weights exceeding supported PAT integer sizes. Use explicit fixed-
+point rounding when required and account for approximation error.
+
+Illustrative PCSP output structure (NOT executed, test syntax in installed PAT):
+
+    var economicSuccess = false;
+    Business() = pcase {
+        9 : Outcome900()
+        1 : Failure()
+    };
+    Failure() = pcase {
+        99 : Outcome750()
+        1 : OutcomeLoss()
+    };
+    // X is scaled to integer utility units; bounds chosen by compiler.
+    // L=-999250, H=900, risk-neutral U for this example.
+    Outcome900() = success {economicSuccess=true;} -> Skip;
+    Outcome750() = pcase {
+        20000 : Good()
+        3 : Bad()
+    };
+    OutcomeLoss() = Bad();
+    Good() = success {economicSuccess=true;} -> Skip;
+    Bad() = no_success -> Skip;
+    #assert Business() reaches economicSuccess with pmin;
+
+IMPORTANT: the above graph is a small illustrative skeleton. For Outcome750
+with these bounds the exact weights are 1000000 and 150, reduced to 20000:3.
+Use the exact fixture in section 12 to verify the generated weights.
+All generated code, including PCSP process syntax and pcase format, must be
+smoke-tested against the installed version. The manifest records the synthetic
+edge separately from real economic events so XAI never describes q as real risk.
+
+8.4 Probability precision is a release-critical issue
+The PAT 3.5 manual states that its default printed precision is five decimal
+places and value iteration uses a configurable stopping threshold [9]. When
+utility bounds differ by millions, rounding a probability can translate into
+large monetary error. If the probability error is bounded by delta_p, the
+resulting utility error is at most (H-L)*delta_p, plus known input/utility
+quantization error. Printed rounding alone is not a certified solver error
+bound; a convergence tolerance alone does not necessarily certify one either.
+
+Requirements:
+- Inspect actual console output/configuration and whether precision can be
+  safely increased in the selected headless setup. Do not assume GUI options
+  propagate to CLI or treat decimal output as exact.
+- Test near-threshold, rare-event, very large-loss and large-range fixtures.
+- For finite acyclic MVP models, implement an independent exact-rational
+  evaluation of the compiled graph as a test oracle and runtime precision
+  cross-check. At stochastic nodes take the weighted sum of successor values;
+  at environmental nondeterministic nodes take minimum. At terminal nodes
+  return actual utility. This verifies the reduction / numerical result for
+  the graph, not completeness or full compiler correctness.
+- Compare PAT reconstructed score against the oracle within a documented
+  numeric tolerance. Authorize only if both agree sufficiently and the
+  conservative decision margin clears the threshold. If error cannot be
+  bounded, consult exact graph result for a conservative cross-check but mark
+  discrepancy or insufficient solver precision as review, never PAT-verified.
+- If the PAT integration fails, use the graph oracle only as an explicitly
+  labelled development fallback; do not falsely present it as actual PAT use.
+- If expected utility cannot be obtained reliably using PAT, document the
+  blocker and consider a native reward backend as future work (e.g. PRISM).
+  The primary demo must use PAT for actual evaluated decisions.
+
+8.5 Parameter uncertainty
+For MVP, run the same fixed assertion over an explicitly enumerated set of
+approved parameter scenarios (e.g. normal and adverse supplier conditions).
+Store the same strategy across scenarios; do not choose a different plan
+with knowledge of hidden future conditions. Compare the minimum scenario
+utility and report sensitivity. This is robustness across the enumerated set,
+not a proof for every point of a continuous interval. A sound interval model
+or validated extrema argument is required for full interval guarantees.
+Do not generate independent worst-case probabilities for separate adverse
+outcomes; all event propagation and rewards are evaluated jointly within
+one model. Avoid assuming independent events without evidence.
+
+8.6 Single verification objective versus implementation safeguards
+The sole economic criterion is expected utility (or worst expected utility
+across the approved scenarios) relative to the reference and threshold.
+Identity, customer consent, legal/capability eligibility, freshness and input
+validation are separate deterministic pre-execution requirements; they must
+not be traded for money. Structural tests enforce model well-formedness, not
+new per-request business assertions. Account for uncertainty by abstention,
+not by accepting a superficially profitable but incompletely modelled action.
+
+Definition of done: generated models for discounts, rescheduling and compound
+requests all contain the exact same fixed PAT assertion; utility results
+match independent known values; omitted required risk/context or invalid
+arithmetic rejects before authorization; actual PAT runs are reproducible.
+
+9. STEP 7: IMPLEMENT PAT ADAPTER AND DECISION ORCHESTRATOR
+----------------------------------------------------------------------
+Owner: verification/backend engineer. Priority: MUST.
+
+9.1 Runner
+- Use one isolated temporary directory per run, safe filenames, fixed tool
+  binary and module selection, subprocess argument list, no shell injection.
+- For PAT3.Console.exe, test the installed command, typically:
+    PAT3.Console.exe -pcsp model.csp results.txt
+  Confirm exact extension/argument order using installed help. Record version
+  and module. Retain stdout/stderr and output files for debugging.
+- Enforce timeout, memory/state limits and bounded concurrent jobs. A zero
+  process exit code with empty results is not success. Verify the assertion
+  text, expected result format, status and numeric field explicitly; do not
+  parse an unrelated printed number as probability. Reject NaN, missing,
+  out-of-range and incomplete results. Store duration and state count if
+  provided by the actual tool. Redact sensitive content and avoid secrets.
+- Return typed status SUCCESS / TIMEOUT / PARSE_ERROR / TOOL_ERROR /
+  NUMERIC_UNCERTAIN; only SUCCESS plus validated score may authorize.
+
+9.2 Decision engine
+For each feasible plan evaluate utility including rejection/status quo.
+Let score(plan) = minimum expected utility over approved parameter scenarios.
+Compare consistently against a configurable owner threshold and baseline;
+recommended MVP rule: approve a customer-satisfying strategy only if its
+conservative score is at least baseline score + minimum gain and any absolute
+utility floor configured by owner. If score uncertainty overlaps the threshold
+or candidate ranking is unresolved, request review or choose a clearly safe
+nonbinding alternative. Do not round before making the decision.
+For an already booked trip, rejecting an amendment may itself create churn;
+model that consequence in the baseline rather than silently assigning zero.
+An alternative that needs customer consent is a COUNTEROFFER, not a commit.
+If no strategy qualifies, reject/clarify/escalate with an appropriate response.
+Score is conditional on selected model, horizon, known probabilities and owner
+utility; not guaranteed profit or guarantee against all business risk.
+
+9.3 Authorization/execution
+Create an expiring, one-use, signed or server-stored authorization linking
+session/customer ID, strategy ID, exact approved terms, business snapshot
+version, knowledge and utility versions, decision ID and model hash.
+For a contingent plan, enforce only the verified next operation conditional
+on actual observed state; never let an authorization to ask a supplier become
+an authorization to promise delivery. Re-evaluate if new supplier information
+or state invalidates the verified assumptions. Check token expiry, replay,
+identity and state version atomically with the sandbox commit (idempotency
+key). A changed price/date, stale state, missing token or direct write must
+be rejected. Simulate actual booking/quote transitions for the MVP.
+
+Definition of done: verifier cannot be bypassed via the execution API;
+reject, error, stale snapshot and unauthorized tool outputs cannot commit.
+
+10. STEP 8: AUDITABILITY AND EXPLAINABLE AI (XAI)
+----------------------------------------------------------------------
+Owner: backend + audit/agent engineer. Priority: MUST; keep compact.
+
+10.1 Audit trail (deterministic instrumentation)
+Use an append-only event table or JSONL journal with access control. Log:
+- timestamp, correlation ID, actor/role, request ID and (redacted) request;
+- extracted goal, customer constraints, candidate plan(s), validation result;
+- source references, assumptions, context/date, approval and pack versions;
+- compiler graph/model hash, operation IDs, utility and bounds, scenario IDs;
+- PAT assertion, probability result, solver version, precision, duration,
+  status and oracle check; retain model artifact for authorized reviewer;
+- comparison by candidate, threshold/baseline, numerical decision rationale;
+- verdict, exact approved terms, authorization events, customer response and
+  execution result or reason for abstention.
+Record observable tool calls and structured decision traces, not hidden model
+reasoning. Store minimally necessary personal data; access and retention policy
+are necessary for later production. Do not call a simple local append-only
+log tamper-proof; hash chaining is optional, not a substitute for access control.
+
+10.2 XAI tool
+Primary explanation is derived from verifier data and model provenance, not
+an LLM guessing what happened. Show:
+  (a) request interpretation and strategy considered;
+  (b) baseline and candidate expected utilities with units and margins;
+  (c) important modelled causal paths and economic drivers;
+  (d) sensitivity to approved parameter scenarios and utility settings;
+  (e) reason for approve/counteroffer/reject/escalate and approved alternative;
+  (f) evidence/assumption status (synthetic, estimate, observed) and limits.
+For the small acyclic graph, compute path probabilities and terminal utility
+contributions using a deterministic forward traversal or dynamic programming
+under the same fixed strategy. These are diagnostics from the model, NOT extra
+PAT assertions. Do not display independent pmin/pmax paths as one actual
+probability distribution. If nondeterminism remains and no matching policy is
+available, show feasible example paths/intervals only or label the limitation.
+Example: baseline profit 900, expected retention loss 15, expected legal loss
+1000, expected value -115 under the illustrative risk-neutral profile. With
+loss-aversion, distinguish expected value from expected utility. Use terminal
+contributions or clearly label an exact monetary decomposition versus a
+nonlinear utility decomposition. Do not double count overlapping consequences.
+Optional counterfactual explanation: re-evaluate same query with ONE approved
+parameter or action changed, e.g. amendment with a confirmed supplier hold.
+Report the change as a model-based sensitivity, not causal proof from data.
+
+10.3 Audit agent behaviour
+Read-only QwenWork audit Skill creates a founder-friendly summary citing event
+IDs and numeric fields. Backend validates numbers and known references against
+journal; if invalid, show deterministic report. It shall not overwrite recorded
+facts, trade-offs or decision status. Customer-facing explanation must omit
+private supplier margins, sensitive legal assumptions and internal records;
+show permitted terms and a polite high-level reason instead.
+
+Definition of done: founder can click a decision and reconstruct the chain
+from request -> plan -> approved assumptions -> model -> PAT -> utility ->
+verdict -> action. A changed audit-agent summary cannot alter the outcome.
+
+11. STEP 9: STANDARD APPLICATION AND PLATFORM DELIVERABLES
+----------------------------------------------------------------------
+Owner: frontend/Hashmeta engineer + integration engineer. Priority: MUST.
+
+11.1 Suggested lightweight stack (team may substitute equivalent tools)
+Backend: Python + FastAPI, Pydantic/JSON Schema, SQLite or simple local DB;
+PAT runner: Windows host/VM or known compatible environment; frontend: simple
+React/Vite or server-rendered UI. Keep credentials server side. MCP endpoint
+or supported local connector exposes narrowly scoped tools to QwenWork. Use
+one shared schema package for agent/backend/frontend validation.
+Suggested repository:
+
+  agentguard/
+    agents/skills/                sales, knowledge, risk_review, audit
+    shared/                       schemas, operation registry contracts
+    domain_packs/travel/           approved data, templates, valuations
+    compiler/                     IR, validator, dependency closure,
+                                  composition, graph, utility, PCSP emitter
+    pat_adapter/                  runner, result parser, normalization
+    governance/                   orchestration, scoring, authorization
+    audit/                        events, deterministic XAI, report renderer
+    api/                          customer, review, evaluation, audit routes
+    frontend/                     customer demo + founder dashboard
+    tests/                        fixtures, graph oracle, integration, E2E
+    demo/                         sample data and replayable scenarios
+    README.md                     launch/setup and QwenWork instructions
+
+11.2 Customer demo screen (brief)
+Natural-language negotiation field, simulated booking summary, approved
+customer-friendly response, follow-up/counteroffer, status indicator. No raw
+private risk assumptions in customer view. Do not present the agent chat as a
+binding channel unless backend gate actually controls it.
+
+11.3 Founder screen (brief)
+Knowledge pack review/edit/approve; selected utility profile; decision history;
+XAI view displaying candidate comparison, assumptions, causal paths, PAT query,
+result and execution outcome. Minimal role segregation even in prototype.
+
+11.4 QwenWork platform requirements (20% grading)
+Install/create and demonstrate actual QwenWork Skills for sales negotiation,
+knowledge acquisition and audit review (risk review if time permits). Connect
+through documented custom MCP connector where available, otherwise disclose the
+supported handoff method. Capture demo evidence of QwenWork's role, connector
+invocation, structured plan and result. The customer-facing interpretation and
+planning must be performed by QwenWork in the normal demo, not a separate
+uncredited LLM with QwenWork shown only on slides. Do not invent an API endpoint
+or promise unattended agent invocation until confirmed in the workspace.
+
+11.5 Hashmeta AI website requirements (15% grading)
+Build AND publish the product website in Hashmeta AI CMS [10-11]. Suggested
+pages/sections: homepage and positioning, small-business pain point, travel
+case study (explicitly inspired by Mesho; simulated use case), how it works,
+transparency/limitations, demo CTA and contact. Include a real published URL
+in submission. Provide a prominent link to the hosted demo or a separately
+hosted demo UI if embedding is unsupported. Optionally create a sample travel
+agency landing page and inquiry form via CMS to show acquisition -> negotiation
+-> governance. Use only confirmed CMS linking/embedding/form functionality;
+do not assert direct Hashmeta CRM integration unless actually implemented.
+No need to rebuild Hashmeta CMS inside the application. Do not put customer
+audits, financial data or secrets on the public site. The public website is a
+required platform deliverable, not the core verification UI.
+
+12. STEP 10: TESTING AND ACCEPTANCE CRITERIA
+----------------------------------------------------------------------
+Owner: all, with separate reviewer for verification. Priority: MUST.
+
+12.1 Numerical oracle fixtures (exact, synthetic)
+A. Simple fixed discount: price 120, cost 90, requested discount 10; net value
+   20 for the offered new sale. If the comparison baseline is no transaction
+   with value 0 and utility is identity, score=20. Negative profit requests
+   should be rejected against that baseline. Distinguish price from profit.
+B. Rare loss: terminal profit $900 (p=.9), $750 (p=.099), -$999,250 (p=.001).
+   E[V]=-$115 exactly; risk-neutral bounds L=-999250, H=900. Expected
+   synthetic probability = (999250-115)/1000150 = 999135/1000150.
+   Terminal weights for $750 are 1,000,000 and 150 (reduced 20000:3).
+   With U(V)=V if V>=0 and 3V otherwise, E[U]=-2113.50. Values use same
+   synthetic units; real implementation should use signed cents consistently.
+   These event probabilities and financial losses are invented demo inputs,
+   not evidence about Mesho or any actual travel operator.
+C. P(profit)>0 test: 99% chance of $100 gain and 1% chance of $100,000 loss
+   produces E[V]=-$901 despite 99% profitability probability. PAT query must
+   recover expected utility, not approve simply because likely profitable.
+D. Deterministic cases incl. H=L, q=0/q=1, all-negative outcomes, zero net
+   payoff, rare event, near-threshold precision and very large utility range.
+E. Conditional consequences: legal dispute conditional on service failure;
+   compare exact terminal joint distribution. Independent marginals should
+   not be substituted. Test repeated costs and overlapping refund events.
+
+12.2 Flagship travel decision (incremental, same starting booking)
+Customer asks: "Can I move my existing booking 30 days later at no extra cost?"
+Use common starting state and illustrative probabilities/valuations. Example
+relative to keeping the original booking BEFORE considering customer reaction:
+  - Reject: expected incremental retention loss -$150 (fixture deterministic).
+  - Guarantee immediately: 80% chance amendment succeeds at extra $80 fee;
+    19.8% chance delivery failure costs $150; 0.2% chance delivery failure
+    causes $150 cost AND $1,000,000 lawsuit. E[V]=-2094.
+  - Conditional amendment: 80% chance supplier binding confirmation at $80
+    cost; 20% unavailable, preserve original, retention cost $150. E[V]=-$94.
+  - Optional paid alternative: model the probability of consenting and fees;
+    not an approved commitment until consent is obtained.
+These are illustrative paths and must be refined if real supplier conditions
+require other costs/events. Under risk-neutral utility, the conditional plan
+improves on rejection by $56 while the immediate unconditional plan is worse.
+A configured absolute floor of zero on incremental outcome would reject all
+negative plans; set floor/threshold appropriately for a service-recovery demo
+(e.g. compare against status quo and require gain >= 0, with no separate zero
+floor). Under loss-aversion, evaluate the same function for every candidate.
+Use the exact graph oracle to calculate expected results; never hardcode
+these into the actual verdict. Conditional execution may authorize a supplier
+request only; it confirms the new date only after the hold is verified.
+
+12.3 End-to-end held-out suite
+Prepare at least 12-20 requests; freeze some examples until after development.
+Include paraphrases, ambiguous dates, $ versus %, discount, reschedule,
+upgrade, compound request, out-of-scope loyalty conversion, unsupported
+supplier policy, missing probability, stale supplier/booking version, failed
+PAT job and malicious attempt to override policy. Add tests changing the
+approved probability/valuation and checking the expected score changes.
+Use reviewer-labelled reference plans and consequences. Count supported,
+correctly clarified, correctly abstained and incorrectly authorized cases.
+Compare with unrestricted agent and simple fixed-rule baseline if feasible;
+judge against the same synthetic scenarios and utility profile. Report actual
+measured results only, with test sample sizes and limitations.
+
+12.4 Coverage and enforcement test checklist
+- New approved risk/valuation extends knowledge without changing query text.
+- New combination of known operations compiles without new request handler.
+- Missing required risk family, unapproved fact, out-of-range parameter or
+  arbitrary operation causes NEEDS_REVIEW/ERROR rather than guessed value.
+- Probabilities normalized; all terminal paths counted; overflow guarded.
+- PAT runner catches empty output even with exit 0, timeout and parse mismatch.
+- Numeric cross-check matches fixtures, no borderline approvals.
+- A rejected or stale authorization cannot execute; wrong session cannot use
+  token; repeated use is idempotent or rejected; unapproved terms cannot send.
+- Audit explanation cites recorded assumptions and results; no fabricated facts.
+- QwenWork genuinely used in demo; Hashmeta AI website published and linked.
+
+Performance target (proposed): bounded small-model negotiation evaluation
+within ~10 seconds on the demo machine where practical; timeout/abstain if
+not feasible. Record real latency instead of promising it. Other MVP targets:
+all numerical fixtures pass; zero unauthorized commits in specified tests;
+all held-out requests report a valid supported outcome or explicit abstention.
+Do not describe these targets as achieved until actually measured.
+
+13. SIX-DAY EXECUTION PLAN AND WORKSTREAMS
+----------------------------------------------------------------------
+Dates are based on the organizer deadline [2]. Adjust to team capacity.
+
+Day 1 (17-18 Nov): Platform access, PAT proof of concept, fixed-query encoding
+and exact oracle smoke test, freeze IR/schema, repository and site shell.
+Day 2 (18-19 Nov): Travel fixtures, operation and consequence semantics,
+knowledge review flow, sales Skill and backend connector. Complete deterministic
+utility pipeline and first discount model.
+Day 3 (19-20 Nov): Compose conditional rescheduling model, PAT adapter, loss
+aversion and candidate comparison; integrate live QwenWork tool invocation.
+Day 4 (20-21 Nov): Guarded execution, audit logs and XAI, customer/founder UI;
+Hashmeta AI website content and demo link. Add third/compound request if core
+works, otherwise focus on robust travel workflow.
+Day 5 (21-22 Nov): Held-out and adversarial tests, precision and fail-closed
+checks, publish website, measure outcomes, prepare demonstration.
+Day 6 (22-23 Nov): Freeze features, rehearse, capture three-minute video,
+verify submission artifacts and deadline. Avoid major new features.
+
+Suggested parallel ownership (roles can be combined):
+- Verification/PL lead: transition DSL, compiler, fixed assertion, PAT, oracle.
+- QwenWork/AI lead: Skills, structured contracts, knowledge/review and audit roles.
+- Backend lead: trusted state, orchestration, tool endpoint, auth, audit events.
+- Frontend/product lead: Hashmeta site, dashboard, demo, user-facing messaging.
+- All: define fixtures and jointly verify end-to-end acceptance tests.
+
+Critical path: confirm actual PAT expected-utility reduction and platform
+connector early; then a working QwenWork -> compiler -> PAT -> guarded result
+vertical slice. If time runs short, drop advanced review agent, multi-industry
+UI, live supplier data, concurrency and parameter optimization before dropping
+core enforcement, audit, QwenWork or the published Hashmeta website.
+
+14. DEMONSTRATION AND SUBMISSION
+----------------------------------------------------------------------
+Proposed three-minute story (adjust after actual tests):
+  0:00-0:25   Show Hashmeta-built site and Mesho-inspired acquisition-to-sales
+              opportunity; introduce small founder's negotiation risk.
+  0:25-0:55   Show approved knowledge pack and owner utility configuration;
+              QwenWork interprets customer request and produces structured plan.
+  0:55-1:45   Compare immediate guarantee, rejection and conditional amendment;
+              show actual compiler graph, PAT single query, numeric utility,
+              and explain why conditional strategy wins.
+  1:45-2:15   Show permitted customer response and guarded execution;
+              demonstrate a blocked request or unsupported case.
+  2:15-2:40   Show audit trail and XAI with linked evidence and trade-offs.
+  2:40-3:00   Show measured results, one-person-company value and limits.
+
+Judging alignment:
+  Innovation (25%): single utility objective; compositional domain compiler;
+    probabilistic reasoning over downstream consequences, not LLM-only scoring.
+  Feasibility & Viability (25%): small travel context, validated/synthetic
+    assumptions, owner-level human review, bounded models and auditability.
+  QwenWork (20%): actual Skills/agent workflows and connector usage.
+  Demo (15%): understandable business request, quantitative comparison,
+    controlled decision and explanatory evidence.
+  Hashmeta website (15%): live website created and published in AI CMS.
+
+Checklist: Git repository with README; actual QwenWork configuration and
+run evidence; knowledge pack with provenance labels; compiler and PCSP
+artifacts; PAT runner/version; evaluation test results; guarded demo; audit
+report; published Hashmeta site URL; three-minute video and submission.
+
+15. LIMITATIONS AND CLAIM BOUNDARIES
+----------------------------------------------------------------------
+- Formal guarantee is relative to composed state/transition model, approved
+  assumptions, utility semantics and correctly enforced execution interface.
+- Data validity: estimates require evidence and human review, approval alone
+  does not establish calibration; demo inputs are not actual industry rates.
+- Completeness: no absolute guarantee of all real-world consequences. Risk
+  review, dependency closure and held-out scenarios expose known gaps;
+  unknown unknowns remain. Record bounded horizon and scope. Fail closed
+  on detected gaps, not on an imagined ability to detect all omissions.
+- Expected utility expresses owner's trade-offs, not a guarantee of profit,
+  solvency, lawful behavior or customer satisfaction. Non-permissible actions
+  excluded before evaluation; do not use cost-benefit to legitimize them.
+- The proposed one-query reduction is mathematical for bounded terminating
+  models; PAT code, actual precision and platform integration are not yet
+  executed or validated in this handoff. Require Day 1 technical verification.
+- Direct Hashmeta CRM integration, production QwenWork invocation hooks and
+  cross-industry generalization are not assumed or claimed. Prototype includes
+  mock transaction endpoint; disclose any manual integration step honestly.
+
+16. REFERENCE MATERIAL (public; checked 17 November 2026)
+----------------------------------------------------------------------
+[1] Hashmeta AI, Mesho Travel & Tours case study (reported results).
+    https://hashmeta.ai/case-studies/mesho
+[2] Organizer, QwenWork x Hashmeta AI OPC Hackathon event listing (judging,
+    date, three-minute video, platform requirements).
+    https://luma.com/kxld1xck
+[3] QwenWork International Edition product guide.
+    https://docs.qwenwork.ai/product-introduction
+[4] QwenWork Skills.
+    https://docs.qwenwork.ai/features/skills
+    https://docs.qwenwork.ai/desktop/skills
+[5] QwenWork Connectors and desktop custom MCP service configuration.
+    https://docs.qwenwork.ai/features/connectors
+    https://docs.qwenwork.ai/desktop/connectors
+[6] QwenWork Workspace and Agent Sessions.
+    https://docs.qwenwork.ai/web/workspace-agent-sessions
+[7] PAT 3.5 PCSP probability processes (pcase).
+    https://pat.comp.nus.edu.sg/resources/OnlineHelp/htm/scr/3.3%20PCSP%20Module/3.3.1.1%20Probability%20Processes.htm
+[8] PAT 3.5 PCSP assertions (probability reachability).
+    https://pat.comp.nus.edu.sg/resources/OnlineHelp/htm/scr/3.3%20PCSP%20Module/3.3.1.2%20PCSP%20Assertions.htm
+[9] PAT 3.5 PCSP module (algorithm and precision configuration).
+    https://pat.comp.nus.edu.sg/resources/OnlineHelp/htm/scr/3.3%20PCSP%20Module/3.3%20Probability%20CSP%20Module.htm
+[10] Hashmeta AI CMS platform.
+     https://hashmeta.ai/platform/ai-cms
+[11] Hashmeta AI CMS tutorial.
+     https://app.hashmeta.ai/ai-cms/tutorial
+
+END OF REQUIREMENTS
+======================================================================

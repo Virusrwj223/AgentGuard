@@ -1,0 +1,82 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "record_id": {
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,47}$",
+      "title": "Record Id",
+      "type": "string"
+    },
+    "value": {
+      "anyOf": [
+        {
+          "maximum": 100000000,
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Value"
+    },
+    "source": {
+      "maxLength": 320,
+      "minLength": 3,
+      "title": "Source",
+      "type": "string"
+    },
+    "evidence": {
+      "maxLength": 800,
+      "minLength": 3,
+      "title": "Evidence",
+      "type": "string"
+    },
+    "limitations": {
+      "maxLength": 400,
+      "minLength": 3,
+      "title": "Limitations",
+      "type": "string"
+    },
+    "context": {
+      "maxLength": 200,
+      "minLength": 2,
+      "title": "Context",
+      "type": "string"
+    },
+    "sample_size": {
+      "anyOf": [
+        {
+          "maximum": 10000000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Sample Size"
+    },
+    "evidence_status": {
+      "enum": [
+        "synthetic",
+        "estimate",
+        "observed",
+        "unknown"
+      ],
+      "title": "Evidence Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "record_id",
+    "value",
+    "source",
+    "evidence",
+    "limitations",
+    "context",
+    "sample_size",
+    "evidence_status"
+  ],
+  "title": "Draft",
+  "type": "object"
+}

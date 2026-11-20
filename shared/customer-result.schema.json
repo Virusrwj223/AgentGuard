@@ -1,0 +1,73 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "decision_id": {
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,47}$",
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "request_id": {
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,47}$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "Exact preview",
+        "PAT"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "APPROVED",
+        "COUNTEROFFER",
+        "REJECTED",
+        "CLARIFY",
+        "NEEDS_REVIEW",
+        "ERROR"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "message": {
+      "title": "Message",
+      "type": "string"
+    },
+    "terms": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Terms"
+    },
+    "terms_digest": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Terms Digest"
+    }
+  },
+  "required": [
+    "decision_id",
+    "request_id",
+    "mode",
+    "status",
+    "message"
+  ],
+  "title": "CustomerResult",
+  "type": "object"
+}

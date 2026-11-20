@@ -1,0 +1,412 @@
+{
+  "$defs": {
+    "Conditional": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "const": "IF",
+          "title": "Op",
+          "type": "string"
+        },
+        "predicate": {
+          "const": "AMENDMENT_APPROVED",
+          "title": "Predicate",
+          "type": "string"
+        },
+        "then": {
+          "discriminator": {
+            "mapping": {
+              "ADJUST_PRICE": "#/$defs/Price",
+              "CONFIRM_AMENDMENT": "#/$defs/Confirm",
+              "GUARANTEE_AMENDMENT": "#/$defs/Request",
+              "IF": "#/$defs/Conditional",
+              "KEEP_BOOKING": "#/$defs/Keep",
+              "REQUEST_AMENDMENT": "#/$defs/Request",
+              "SEQUENCE": "#/$defs/Sequence",
+              "UPGRADE": "#/$defs/Upgrade"
+            },
+            "propertyName": "op"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Keep"
+            },
+            {
+              "$ref": "#/$defs/Request"
+            },
+            {
+              "$ref": "#/$defs/Confirm"
+            },
+            {
+              "$ref": "#/$defs/Price"
+            },
+            {
+              "$ref": "#/$defs/Upgrade"
+            },
+            {
+              "$ref": "#/$defs/Sequence"
+            },
+            {
+              "$ref": "#/$defs/Conditional"
+            }
+          ],
+          "title": "Then"
+        },
+        "otherwise": {
+          "discriminator": {
+            "mapping": {
+              "ADJUST_PRICE": "#/$defs/Price",
+              "CONFIRM_AMENDMENT": "#/$defs/Confirm",
+              "GUARANTEE_AMENDMENT": "#/$defs/Request",
+              "IF": "#/$defs/Conditional",
+              "KEEP_BOOKING": "#/$defs/Keep",
+              "REQUEST_AMENDMENT": "#/$defs/Request",
+              "SEQUENCE": "#/$defs/Sequence",
+              "UPGRADE": "#/$defs/Upgrade"
+            },
+            "propertyName": "op"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Keep"
+            },
+            {
+              "$ref": "#/$defs/Request"
+            },
+            {
+              "$ref": "#/$defs/Confirm"
+            },
+            {
+              "$ref": "#/$defs/Price"
+            },
+            {
+              "$ref": "#/$defs/Upgrade"
+            },
+            {
+              "$ref": "#/$defs/Sequence"
+            },
+            {
+              "$ref": "#/$defs/Conditional"
+            }
+          ],
+          "title": "Otherwise"
+        }
+      },
+      "required": [
+        "op",
+        "predicate",
+        "then",
+        "otherwise"
+      ],
+      "title": "Conditional",
+      "type": "object"
+    },
+    "Confirm": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "const": "CONFIRM_AMENDMENT",
+          "title": "Op",
+          "type": "string"
+        }
+      },
+      "required": [
+        "op"
+      ],
+      "title": "Confirm",
+      "type": "object"
+    },
+    "Goal": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "enum": [
+            "amend",
+            "sale",
+            "upgrade",
+            "amend_upgrade",
+            "unknown"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "days": {
+          "anyOf": [
+            {
+              "maximum": 90,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Days"
+        },
+        "discount_cents": {
+          "anyOf": [
+            {
+              "maximum": 100000000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Discount Cents"
+        },
+        "max_extra_charge_cents": {
+          "default": 0,
+          "maximum": 100000000,
+          "minimum": 0,
+          "title": "Max Extra Charge Cents",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "title": "Goal",
+      "type": "object"
+    },
+    "Keep": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "const": "KEEP_BOOKING",
+          "title": "Op",
+          "type": "string"
+        }
+      },
+      "required": [
+        "op"
+      ],
+      "title": "Keep",
+      "type": "object"
+    },
+    "Price": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "const": "ADJUST_PRICE",
+          "title": "Op",
+          "type": "string"
+        },
+        "discount_cents": {
+          "maximum": 100000000,
+          "minimum": 0,
+          "title": "Discount Cents",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "op",
+        "discount_cents"
+      ],
+      "title": "Price",
+      "type": "object"
+    },
+    "Request": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "enum": [
+            "REQUEST_AMENDMENT",
+            "GUARANTEE_AMENDMENT"
+          ],
+          "title": "Op",
+          "type": "string"
+        },
+        "days": {
+          "maximum": 90,
+          "minimum": 1,
+          "title": "Days",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "op",
+        "days"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    "Sequence": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "const": "SEQUENCE",
+          "title": "Op",
+          "type": "string"
+        },
+        "steps": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "ADJUST_PRICE": "#/$defs/Price",
+                "CONFIRM_AMENDMENT": "#/$defs/Confirm",
+                "GUARANTEE_AMENDMENT": "#/$defs/Request",
+                "IF": "#/$defs/Conditional",
+                "KEEP_BOOKING": "#/$defs/Keep",
+                "REQUEST_AMENDMENT": "#/$defs/Request",
+                "SEQUENCE": "#/$defs/Sequence",
+                "UPGRADE": "#/$defs/Upgrade"
+              },
+              "propertyName": "op"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Keep"
+              },
+              {
+                "$ref": "#/$defs/Request"
+              },
+              {
+                "$ref": "#/$defs/Confirm"
+              },
+              {
+                "$ref": "#/$defs/Price"
+              },
+              {
+                "$ref": "#/$defs/Upgrade"
+              },
+              {
+                "$ref": "#/$defs/Sequence"
+              },
+              {
+                "$ref": "#/$defs/Conditional"
+              }
+            ]
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Steps",
+          "type": "array"
+        }
+      },
+      "required": [
+        "op",
+        "steps"
+      ],
+      "title": "Sequence",
+      "type": "object"
+    },
+    "Strategy": {
+      "additionalProperties": false,
+      "properties": {
+        "strategy_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,47}$",
+          "title": "Strategy Id",
+          "type": "string"
+        },
+        "plan": {
+          "discriminator": {
+            "mapping": {
+              "ADJUST_PRICE": "#/$defs/Price",
+              "CONFIRM_AMENDMENT": "#/$defs/Confirm",
+              "GUARANTEE_AMENDMENT": "#/$defs/Request",
+              "IF": "#/$defs/Conditional",
+              "KEEP_BOOKING": "#/$defs/Keep",
+              "REQUEST_AMENDMENT": "#/$defs/Request",
+              "SEQUENCE": "#/$defs/Sequence",
+              "UPGRADE": "#/$defs/Upgrade"
+            },
+            "propertyName": "op"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Keep"
+            },
+            {
+              "$ref": "#/$defs/Request"
+            },
+            {
+              "$ref": "#/$defs/Confirm"
+            },
+            {
+              "$ref": "#/$defs/Price"
+            },
+            {
+              "$ref": "#/$defs/Upgrade"
+            },
+            {
+              "$ref": "#/$defs/Sequence"
+            },
+            {
+              "$ref": "#/$defs/Conditional"
+            }
+          ],
+          "title": "Plan"
+        }
+      },
+      "required": [
+        "strategy_id",
+        "plan"
+      ],
+      "title": "Strategy",
+      "type": "object"
+    },
+    "Upgrade": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "const": "UPGRADE",
+          "title": "Op",
+          "type": "string"
+        },
+        "charge_cents": {
+          "maximum": 100000000,
+          "minimum": 0,
+          "title": "Charge Cents",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "op",
+        "charge_cents"
+      ],
+      "title": "Upgrade",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "request_id": {
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,47}$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "booking_id": {
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,47}$",
+      "title": "Booking Id",
+      "type": "string"
+    },
+    "goal": {
+      "$ref": "#/$defs/Goal"
+    },
+    "needs_clarification": {
+      "title": "Needs Clarification",
+      "type": "boolean"
+    },
+    "candidate_strategies": {
+      "items": {
+        "$ref": "#/$defs/Strategy"
+      },
+      "maxItems": 5,
+      "title": "Candidate Strategies",
+      "type": "array"
+    }
+  },
+  "required": [
+    "request_id",
+    "booking_id",
+    "goal",
+    "needs_clarification",
+    "candidate_strategies"
+  ],
+  "title": "Proposal",
+  "type": "object"
+}

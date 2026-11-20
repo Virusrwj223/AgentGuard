@@ -1,0 +1,18 @@
+var successFlag = false;
+#define economicSuccess successFlag == true;
+Good() = success{successFlag = true;} -> Skip;
+Bad() = no_success -> Skip;
+Business() = N0();
+N0() = pcase { 4 : edge0_0 -> N1() 1 : edge0_1 -> N3() };
+N1() = edge1_0 -> N2();
+N2() = Good();
+N3() = edge3_0 -> N4();
+N4() = edge4_0 -> N5();
+N5() = edge5_0 -> N6();
+N6() = edge6_0 -> N7();
+N7() = pcase { 1 : edge7_0 -> N8() 99 : edge7_1 -> N10() };
+N8() = edge8_0 -> N9();
+N9() = Bad();
+N10() = edge10_0 -> N11();
+N11() = pcase { 100000 : Good() 7 : Bad() };
+#assert Business() reaches economicSuccess with pmin;

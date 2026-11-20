@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "agentguard-sales": {
+      "command": "ABSOLUTE_PATH_TO_VENV_PYTHON",
+      "args": ["ABSOLUTE_PATH_TO_PROJECT/integrations/mcp_server.py"],
+      "env": {
+        "AG_URL": "http://127.0.0.1:8765",
+        "AG_ROLE": "sales",
+        "AG_ROLE_KEY": "SESSION_SCOPED_SALES_KEY_FROM_CUSTOMER_HANDOFF"
+      }
+    }
+  }
+}

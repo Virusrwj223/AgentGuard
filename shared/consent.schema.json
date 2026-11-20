@@ -1,0 +1,27 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "decision_id": {
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,47}$",
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "terms_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Terms Digest",
+      "type": "string"
+    },
+    "consent": {
+      "const": true,
+      "title": "Consent",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "decision_id",
+    "terms_digest",
+    "consent"
+  ],
+  "title": "Consent",
+  "type": "object"
+}

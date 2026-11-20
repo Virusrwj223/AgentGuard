@@ -1,0 +1,8 @@
+NORTHLINE / SYNTHETIC ONBOARDING EXERCISE
+Record: normal_available
+Context: normal, 8–90 days before departure
+Period: fictional November sample, 50 amendment requests with supplier responses.
+45 requests received binding holds, 5 did not. Excludes late and peak requests.
+For the exercise only, propose 9,000 basis points with sample size 50.
+The sample is invented and cannot calibrate real supplier reliability. Preserve
+the separate adverse scenario. Publication requires an explicit founder action.

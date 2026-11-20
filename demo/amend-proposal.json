@@ -1,0 +1,41 @@
+{
+  "request_id": "REPLACE_WITH_ACTIVE_REQUEST",
+  "booking_id": "B001",
+  "goal": {
+    "type": "amend",
+    "days": 30,
+    "max_extra_charge_cents": 0
+  },
+  "needs_clarification": false,
+  "candidate_strategies": [
+    {
+      "strategy_id": "guarantee",
+      "plan": {
+        "op": "GUARANTEE_AMENDMENT",
+        "days": 30
+      }
+    },
+    {
+      "strategy_id": "conditional",
+      "plan": {
+        "op": "SEQUENCE",
+        "steps": [
+          {
+            "op": "REQUEST_AMENDMENT",
+            "days": 30
+          },
+          {
+            "op": "IF",
+            "predicate": "AMENDMENT_APPROVED",
+            "then": {
+              "op": "CONFIRM_AMENDMENT"
+            },
+            "otherwise": {
+              "op": "KEEP_BOOKING"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

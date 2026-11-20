@@ -1,0 +1,579 @@
+{
+  "version": 1,
+  "profile_version": 1,
+  "currency": "SGD",
+  "horizon_days": 90,
+  "profile": {
+    "loss_multiplier": 1,
+    "minimum_gain_cents": 0,
+    "floor_cents": null
+  },
+  "records": {
+    "normal_available": {
+      "id": "normal_available",
+      "type": "conditional_probability",
+      "value": 8000,
+      "units": "basis points",
+      "context": "normal, 8\u201390 days before departure",
+      "source": "Northline synthetic fixture AG-01",
+      "evidence": "Illustrative owner-approved demo assumption",
+      "evidence_status": "synthetic",
+      "sample_size": null,
+      "period": null,
+      "limitations": "Single transaction, synthetic inputs, 90-day contribution horizon",
+      "approved_range": [
+        0,
+        10000
+      ],
+      "approval_status": "approved_for_demo",
+      "approver": "fixture curator",
+      "effective": "2026-01-01",
+      "expires": "2030-12-31",
+      "version": 1
+    },
+    "normal_adverse": {
+      "id": "normal_adverse",
+      "type": "conditional_probability",
+      "value": 7000,
+      "units": "basis points",
+      "context": "normal adverse, 8\u201390 days",
+      "source": "Northline synthetic fixture AG-01",
+      "evidence": "Illustrative owner-approved demo assumption",
+      "evidence_status": "synthetic",
+      "sample_size": null,
+      "period": null,
+      "limitations": "Single transaction, synthetic inputs, 90-day contribution horizon",
+      "approved_range": [
+        0,
+        10000
+      ],
+      "approval_status": "approved_for_demo",
+      "approver": "fixture curator",
+      "effective": "2026-01-01",
+      "expires": "2030-12-31",
+      "version": 1
+    },
+    "peak_available": {
+      "id": "peak_available",
+      "type": "conditional_probability",
+      "value": 6500,
+      "units": "basis points",
+      "context": "peak, 1\u20137 days",
+      "source": "Northline synthetic fixture AG-01",
+      "evidence": "Illustrative owner-approved demo assumption",
+      "evidence_status": "synthetic",
+      "sample_size": null,
+      "period": null,
+      "limitations": "Single transaction, synthetic inputs, 90-day contribution horizon",
+      "approved_range": [
+        0,
+        10000
+      ],
+      "approval_status": "approved_for_demo",
+      "approver": "fixture curator",
+      "effective": "2026-01-01",
+      "expires": "2030-12-31",
+      "version": 1
+    },
+    "peak_adverse": {
+      "id": "peak_adverse",
+      "type": "conditional_probability",
+      "value": 5500,
+      "units": "basis points",
+      "context": "peak adverse, 1\u20137 days",
+      "source": "Northline synthetic fixture AG-01",
+      "evidence": "Illustrative owner-approved demo assumption",
+      "evidence_status": "synthetic",
+      "sample_size": null,
+      "period": null,
+      "limitations": "Single transaction, synthetic inputs, 90-day contribution horizon",
+      "approved_range": [
+        0,
+        10000
+      ],
+      "approval_status": "approved_for_demo",
+      "approver": "fixture curator",
+      "effective": "2026-01-01",
+      "expires": "2030-12-31",
+      "version": 1
+    },
+    "claim_given_failure": {
+      "id": "claim_given_failure",
+      "type": "conditional_probability",
+      "value": 100,
+      "units": "basis points",
+      "context": "conditional on a guaranteed amendment failing",
+      "source": "Northline synthetic fixture AG-01",
+      "evidence": "Illustrative owner-approved demo assumption",
+      "evidence_status": "synthetic",
+      "sample_size": null,
+      "period": null,
+      "limitations": "Single transaction, synthetic inputs, 90-day contribution horizon",
+      "approved_range": [
+        0,
+        10000
+      ],
+      "approval_status": "approved_for_demo",
+      "approver": "fixture curator",
+      "effective": "2026-01-01",
+      "expires": "2030-12-31",
+      "version": 1
+    },
+    "consent_upgrade": {
+      "id": "consent_upgrade",
+      "type": "conditional_probability",
+      "value": 7500,
+      "units": "basis points",
+      "context": "paid upgrade offer accepted",
+      "source": "Northline synthetic fixture AG-01",
+      "evidence": "Illustrative owner-approved demo assumption",
+      "evidence_status": "synthetic",
+      "sample_size": null,
+      "period": null,
+      "limitations": "Single transaction, synthetic inputs, 90-day contribution horizon",
+      "approved_range": [
+        0,
+        10000
+      ],
+      "approval_status": "approved_for_demo",
+      "approver": "fixture curator",
+      "effective": "2026-01-01",
+      "expires": "2030-12-31",
+      "version": 1
+    },
+    "fee": {
+      "id": "fee",
+      "type": "valuation",
+      "value": 8000,
+      "units": "SGD cents",
+      "context": "binding supplier amendment fee",
+      "source": "Northline synthetic fixture AG-01",
+      "evidence": "Illustrative owner-approved demo assumption",
+      "evidence_status": "synthetic",
+      "sample_size": null,
+      "period": null,
+      "limitations": "Single transaction, synthetic inputs, 90-day contribution horizon",
+      "approved_range": [
+        0,
+        100000000
+      ],
+      "approval_status": "approved_for_demo",
+      "approver": "fixture curator",
+      "effective": "2026-01-01",
+      "expires": "2030-12-31",
+      "version": 1
+    },
+    "retention": {
+      "id": "retention",
+      "type": "valuation",
+      "value": 15000,
+      "units": "SGD cents",
+      "context": "unfulfilled amendment request, 90-day lost contribution",
+      "source": "Northline synthetic fixture AG-01",
+      "evidence": "Illustrative owner-approved demo assumption",
+      "evidence_status": "synthetic",
+      "sample_size": null,
+      "period": null,
+      "limitations": "Single transaction, synthetic inputs, 90-day contribution horizon",
+      "approved_range": [
+        0,
+        100000000
+      ],
+      "approval_status": "approved_for_demo",
+      "approver": "fixture curator",
+      "effective": "2026-01-01",
+      "expires": "2030-12-31",
+      "version": 1
+    },
+    "recovery": {
+      "id": "recovery",
+      "type": "valuation",
+      "value": 15000,
+      "units": "SGD cents",
+      "context": "failure settlement, including any refund",
+      "source": "Northline synthetic fixture AG-01",
+      "evidence": "Illustrative owner-approved demo assumption",
+      "evidence_status": "synthetic",
+      "sample_size": null,
+      "period": null,
+      "limitations": "Single transaction, synthetic inputs, 90-day contribution horizon",
+      "approved_range": [
+        0,
+        100000000
+      ],
+      "approval_status": "approved_for_demo",
+      "approver": "fixture curator",
+      "effective": "2026-01-01",
+      "expires": "2030-12-31",
+      "version": 1
+    },
+    "claim": {
+      "id": "claim",
+      "type": "valuation",
+      "value": 100000000,
+      "units": "SGD cents",
+      "context": "additional loss conditional on a dispute",
+      "source": "Northline synthetic fixture AG-01",
+      "evidence": "Illustrative owner-approved demo assumption",
+      "evidence_status": "synthetic",
+      "sample_size": null,
+      "period": null,
+      "limitations": "Single transaction, synthetic inputs, 90-day contribution horizon",
+      "approved_range": [
+        0,
+        100000000
+      ],
+      "approval_status": "approved_for_demo",
+      "approver": "fixture curator",
+      "effective": "2026-01-01",
+      "expires": "2030-12-31",
+      "version": 1
+    },
+    "upgrade_cost": {
+      "id": "upgrade_cost",
+      "type": "valuation",
+      "value": 2500,
+      "units": "SGD cents",
+      "context": "supplier upgrade cost",
+      "source": "Northline synthetic fixture AG-01",
+      "evidence": "Illustrative owner-approved demo assumption",
+      "evidence_status": "synthetic",
+      "sample_size": null,
+      "period": null,
+      "limitations": "Single transaction, synthetic inputs, 90-day contribution horizon",
+      "approved_range": [
+        0,
+        100000000
+      ],
+      "approval_status": "approved_for_demo",
+      "approver": "fixture curator",
+      "effective": "2026-01-01",
+      "expires": "2030-12-31",
+      "version": 1
+    },
+    "sale_price": {
+      "id": "sale_price",
+      "type": "valuation",
+      "value": 12000,
+      "units": "SGD cents",
+      "context": "new sale list price",
+      "source": "Northline synthetic fixture AG-01",
+      "evidence": "Illustrative owner-approved demo assumption",
+      "evidence_status": "synthetic",
+      "sample_size": null,
+      "period": null,
+      "limitations": "Single transaction, synthetic inputs, 90-day contribution horizon",
+      "approved_range": [
+        0,
+        100000000
+      ],
+      "approval_status": "approved_for_demo",
+      "approver": "fixture curator",
+      "effective": "2026-01-01",
+      "expires": "2030-12-31",
+      "version": 1
+    },
+    "sale_cost": {
+      "id": "sale_cost",
+      "type": "valuation",
+      "value": 9000,
+      "units": "SGD cents",
+      "context": "supplier cost for new sale",
+      "source": "Northline synthetic fixture AG-01",
+      "evidence": "Illustrative owner-approved demo assumption",
+      "evidence_status": "synthetic",
+      "sample_size": null,
+      "period": null,
+      "limitations": "Single transaction, synthetic inputs, 90-day contribution horizon",
+      "approved_range": [
+        0,
+        100000000
+      ],
+      "approval_status": "approved_for_demo",
+      "approver": "fixture curator",
+      "effective": "2026-01-01",
+      "expires": "2030-12-31",
+      "version": 1
+    }
+  },
+  "operations": {
+    "KEEP_BOOKING": {
+      "version": 1,
+      "pre": {
+        "done": false
+      },
+      "tree": {
+        "label": "preserve original",
+        "set": {
+          "done": true
+        },
+        "delta": [],
+        "events": [
+          "rejection"
+        ]
+      },
+      "coverage": {
+        "cost": "N/A: No new supplier purchase.",
+        "availability": "N/A: Original inventory remains reserved or quote is pre-stocked.",
+        "payment": "N/A: No credit or payment default in the prepaid sandbox.",
+        "fulfilment": "N/A: No delivery obligation beyond defined mock transaction.",
+        "liability": "N/A: No unconditional new promise on this branch.",
+        "retention": "covered",
+        "opportunity": "N/A: Inventory is dedicated to this fixture."
+      }
+    },
+    "REQUEST_AMENDMENT": {
+      "version": 1,
+      "pre": {
+        "done": false,
+        "hold": "none"
+      },
+      "tree": {
+        "probability": "@availability",
+        "yes": {
+          "label": "binding hold",
+          "set": {
+            "hold": "held"
+          },
+          "delta": [],
+          "events": []
+        },
+        "no": {
+          "label": "unavailable",
+          "set": {
+            "hold": "failed"
+          },
+          "delta": [],
+          "events": []
+        }
+      },
+      "coverage": {
+        "cost": "N/A: No new supplier purchase.",
+        "availability": "covered",
+        "payment": "N/A: No credit or payment default in the prepaid sandbox.",
+        "fulfilment": "covered",
+        "liability": "N/A: No unconditional new promise on this branch.",
+        "retention": "N/A: No incremental retention effect assumed for this product.",
+        "opportunity": "N/A: Inventory is dedicated to this fixture."
+      }
+    },
+    "CONFIRM_AMENDMENT": {
+      "version": 1,
+      "pre": {
+        "hold": "held",
+        "done": false
+      },
+      "tree": {
+        "label": "confirm held date",
+        "set": {
+          "amended": true,
+          "done": true
+        },
+        "delta": [
+          "-fee"
+        ],
+        "events": []
+      },
+      "coverage": {
+        "cost": "covered",
+        "availability": "N/A: Original inventory remains reserved or quote is pre-stocked.",
+        "payment": "N/A: No credit or payment default in the prepaid sandbox.",
+        "fulfilment": "covered",
+        "liability": "N/A: No unconditional new promise on this branch.",
+        "retention": "N/A: No incremental retention effect assumed for this product.",
+        "opportunity": "N/A: Inventory is dedicated to this fixture."
+      }
+    },
+    "GUARANTEE_AMENDMENT": {
+      "version": 1,
+      "pre": {
+        "hold": "none",
+        "done": false
+      },
+      "tree": {
+        "probability": "@availability",
+        "yes": {
+          "label": "guarantee fulfilled",
+          "set": {
+            "amended": true,
+            "done": true
+          },
+          "delta": [
+            "-fee"
+          ],
+          "events": []
+        },
+        "no": {
+          "label": "promised service unavailable",
+          "set": {
+            "failed": true,
+            "done": true
+          },
+          "delta": [],
+          "events": [
+            "failure"
+          ]
+        }
+      },
+      "coverage": {
+        "cost": "covered",
+        "availability": "covered",
+        "payment": "N/A: No credit or payment default in the prepaid sandbox.",
+        "fulfilment": "covered",
+        "liability": "covered",
+        "retention": "N/A: No incremental retention effect assumed for this product.",
+        "opportunity": "N/A: Inventory is dedicated to this fixture."
+      }
+    },
+    "ADJUST_PRICE": {
+      "version": 1,
+      "pre": {
+        "done": false
+      },
+      "tree": {
+        "label": "sell at quoted price",
+        "set": {
+          "sold": true,
+          "done": true
+        },
+        "delta": [
+          "+sale_price",
+          "-sale_cost",
+          "-$discount_cents"
+        ],
+        "events": []
+      },
+      "coverage": {
+        "cost": "covered",
+        "availability": "N/A: Original inventory remains reserved or quote is pre-stocked.",
+        "payment": "covered",
+        "fulfilment": "N/A: No delivery obligation beyond defined mock transaction.",
+        "liability": "N/A: No unconditional new promise on this branch.",
+        "retention": "N/A: No incremental retention effect assumed for this product.",
+        "opportunity": "N/A: Inventory is dedicated to this fixture."
+      }
+    },
+    "UPGRADE": {
+      "version": 1,
+      "pre": {
+        "upgraded": false,
+        "upgrade_attempted": false
+      },
+      "tree": {
+        "probability": "@consent",
+        "yes": {
+          "label": "upgrade accepted",
+          "set": {
+            "upgraded": true,
+            "done": true,
+            "upgrade_attempted": true
+          },
+          "delta": [
+            "+$charge_cents",
+            "-upgrade_cost"
+          ],
+          "events": []
+        },
+        "no": {
+          "label": "offer declined",
+          "set": {
+            "declined": true,
+            "done": true,
+            "upgrade_attempted": true
+          },
+          "delta": [],
+          "events": []
+        }
+      },
+      "coverage": {
+        "cost": "covered",
+        "availability": "covered",
+        "payment": "covered",
+        "fulfilment": "N/A: No delivery obligation beyond defined mock transaction.",
+        "liability": "N/A: No unconditional new promise on this branch.",
+        "retention": "N/A: No incremental retention effect assumed for this product.",
+        "opportunity": "N/A: Inventory is dedicated to this fixture."
+      }
+    }
+  },
+  "events": {
+    "rejection": {
+      "when": {
+        "seeking_amend": true
+      },
+      "tree": {
+        "label": "lost repeat contribution",
+        "set": {},
+        "delta": [
+          "-retention"
+        ],
+        "events": []
+      }
+    },
+    "failure": {
+      "when": {
+        "failed": true
+      },
+      "tree": {
+        "label": "recovery paid once",
+        "set": {},
+        "delta": [
+          "-recovery"
+        ],
+        "events": [
+          "dispute"
+        ]
+      }
+    },
+    "dispute": {
+      "when": {
+        "failed": true
+      },
+      "tree": {
+        "probability": "claim_given_failure",
+        "yes": {
+          "label": "claim settled",
+          "set": {},
+          "delta": [
+            "-claim"
+          ],
+          "events": []
+        },
+        "no": {
+          "label": "no additional claim",
+          "set": {},
+          "delta": [],
+          "events": []
+        }
+      }
+    }
+  },
+  "scenarios": {
+    "normal": {
+      "reference": "normal_available",
+      "adverse": "normal_adverse"
+    },
+    "peak": {
+      "reference": "peak_available",
+      "adverse": "peak_adverse"
+    }
+  },
+  "required_events": {
+    "KEEP_BOOKING": [
+      "rejection"
+    ],
+    "GUARANTEE_AMENDMENT": [
+      "failure",
+      "dispute"
+    ]
+  },
+  "families": [
+    "cost",
+    "availability",
+    "payment",
+    "fulfilment",
+    "liability",
+    "retention",
+    "opportunity"
+  ]
+}

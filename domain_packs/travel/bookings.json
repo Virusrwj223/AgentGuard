@@ -1,0 +1,71 @@
+{
+  "B001": {
+    "booking_id": "B001",
+    "package": "Kyoto by Rail",
+    "kind": "booked",
+    "context": "normal",
+    "as_of": "2026-11-20",
+    "departure": "2026-12-20",
+    "slots": {
+      "30": "2027-01-19",
+      "14": "2027-01-03"
+    },
+    "policy": "binding_hold_v1",
+    "version": 1,
+    "supplier_version": 1,
+    "upgraded": false,
+    "supplier_mock": "held",
+    "currency": "SGD",
+    "upgrade_prices_cents": [
+      0,
+      5000,
+      7500
+    ]
+  },
+  "B002": {
+    "booking_id": "B002",
+    "package": "Penang Weekend",
+    "kind": "quote",
+    "context": "normal",
+    "as_of": "2026-11-20",
+    "departure": "2026-12-10",
+    "slots": {
+      "30": "2027-01-09",
+      "14": "2026-12-24"
+    },
+    "policy": "binding_hold_v1",
+    "version": 1,
+    "supplier_version": 1,
+    "upgraded": false,
+    "supplier_mock": "held",
+    "currency": "SGD",
+    "upgrade_prices_cents": [
+      0,
+      5000,
+      7500
+    ]
+  },
+  "B003": {
+    "booking_id": "B003",
+    "package": "Seoul in Winter",
+    "kind": "booked",
+    "context": "peak",
+    "as_of": "2026-11-20",
+    "departure": "2026-11-25",
+    "slots": {
+      "14": "2026-12-09",
+      "30": "2026-12-25"
+    },
+    "policy": "binding_hold_v1",
+    "version": 1,
+    "supplier_version": 1,
+    "upgraded": false,
+    "supplier_mock": "unavailable",
+    "currency": "SGD",
+    "upgrade_prices_cents": [
+      0,
+      5000,
+      7500
+    ]
+  }
+}

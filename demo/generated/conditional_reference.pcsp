@@ -1,0 +1,15 @@
+var successFlag = false;
+#define economicSuccess successFlag == true;
+Good() = success{successFlag = true;} -> Skip;
+Bad() = no_success -> Skip;
+Business() = N0();
+N0() = pcase { 4 : edge0_0 -> N1() 1 : edge0_1 -> N3() };
+N1() = edge1_0 -> N2();
+N2() = edge2_0 -> N5();
+N3() = edge3_0 -> N4();
+N4() = edge4_0 -> N6();
+N5() = Good();
+N6() = edge6_0 -> N7();
+N7() = edge7_0 -> N8();
+N8() = Bad();
+#assert Business() reaches economicSuccess with pmin;

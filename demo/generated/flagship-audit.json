@@ -1,0 +1,1736 @@
+{
+  "comparison": [
+    {
+      "interval": null,
+      "strategy": "baseline",
+      "worst_oracle": "-15000"
+    },
+    {
+      "interval": null,
+      "strategy": "guarantee",
+      "worst_oracle": "-310100"
+    },
+    {
+      "interval": null,
+      "strategy": "conditional",
+      "worst_oracle": "-10100"
+    }
+  ],
+  "decision_id": "Df2a45fdae3f78dd30f25",
+  "message": "Your request is with the agency for review. Your booking is unchanged.",
+  "mode": "Exact preview",
+  "models": [
+    {
+      "assumptions": [
+        "retention"
+      ],
+      "bounds": [
+        -15000,
+        -15000
+      ],
+      "closure": [
+        "rejection"
+      ],
+      "compiler": "agentguard-1",
+      "expected_value": "-15000",
+      "goal": {
+        "days": 30,
+        "discount_cents": null,
+        "max_extra_charge_cents": 0,
+        "type": "amend"
+      },
+      "graph": [
+        {
+          "edges": [
+            {
+              "event": "preserve original",
+              "p": "1",
+              "to": 1
+            }
+          ],
+          "id": 0,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "rejection",
+              "p": "1",
+              "to": 2
+            }
+          ],
+          "id": 1,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "lost repeat contribution",
+              "p": "1",
+              "to": 3
+            }
+          ],
+          "id": 2,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "none",
+            "occurred": [
+              "rejection"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [],
+          "id": 3,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "none",
+            "occurred": [
+              "rejection"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -15000
+        }
+      ],
+      "interval": null,
+      "model_hash": "0a13338513dcf1910c49f4448e7ef830a1f91c557ff744a741e20c89e27f27b6",
+      "operations": [
+        "KEEP_BOOKING"
+      ],
+      "oracle": "-15000",
+      "pack_hash": "d46f27e05735a155fa06f87cdb1c0d30e6654f5e44cc4c97ade1634ea52b7155",
+      "paths": [
+        {
+          "contribution": "-15000",
+          "events": [
+            "preserve original",
+            "rejection",
+            "lost repeat contribution"
+          ],
+          "node": 3,
+          "p": "1",
+          "utility": -15000,
+          "value": -15000
+        }
+      ],
+      "pcsp": "var successFlag = false;\n#define economicSuccess successFlag == true;\nGood() = success{successFlag = true;} -> Skip;\nBad() = no_success -> Skip;\nBusiness() = N0();\nN0() = edge0_0 -> N1();\nN1() = edge1_0 -> N2();\nN2() = edge2_0 -> N3();\nN3() = Good();\n#assert Business() reaches economicSuccess with pmin;\n",
+      "plan": {
+        "op": "KEEP_BOOKING"
+      },
+      "query": "#assert Business() reaches economicSuccess with pmin;",
+      "runner": {
+        "diagnostic": "PAT console is not configured",
+        "status": "UNAVAILABLE"
+      },
+      "scenario": "adverse",
+      "snapshot_hash": "5fa4a3d28c6cce780f9731f4da35e9bccc2767f76c5b6ff989c6331b9d8b1019",
+      "strategy": "baseline"
+    },
+    {
+      "assumptions": [
+        "retention"
+      ],
+      "bounds": [
+        -15000,
+        -15000
+      ],
+      "closure": [
+        "rejection"
+      ],
+      "compiler": "agentguard-1",
+      "expected_value": "-15000",
+      "goal": {
+        "days": 30,
+        "discount_cents": null,
+        "max_extra_charge_cents": 0,
+        "type": "amend"
+      },
+      "graph": [
+        {
+          "edges": [
+            {
+              "event": "preserve original",
+              "p": "1",
+              "to": 1
+            }
+          ],
+          "id": 0,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "rejection",
+              "p": "1",
+              "to": 2
+            }
+          ],
+          "id": 1,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "lost repeat contribution",
+              "p": "1",
+              "to": 3
+            }
+          ],
+          "id": 2,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "none",
+            "occurred": [
+              "rejection"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [],
+          "id": 3,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "none",
+            "occurred": [
+              "rejection"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -15000
+        }
+      ],
+      "interval": null,
+      "model_hash": "ee6cd420ab7a29917fed7de3e83349cfe5fe007c93d46f7f74ec9d114549357b",
+      "operations": [
+        "KEEP_BOOKING"
+      ],
+      "oracle": "-15000",
+      "pack_hash": "d46f27e05735a155fa06f87cdb1c0d30e6654f5e44cc4c97ade1634ea52b7155",
+      "paths": [
+        {
+          "contribution": "-15000",
+          "events": [
+            "preserve original",
+            "rejection",
+            "lost repeat contribution"
+          ],
+          "node": 3,
+          "p": "1",
+          "utility": -15000,
+          "value": -15000
+        }
+      ],
+      "pcsp": "var successFlag = false;\n#define economicSuccess successFlag == true;\nGood() = success{successFlag = true;} -> Skip;\nBad() = no_success -> Skip;\nBusiness() = N0();\nN0() = edge0_0 -> N1();\nN1() = edge1_0 -> N2();\nN2() = edge2_0 -> N3();\nN3() = Good();\n#assert Business() reaches economicSuccess with pmin;\n",
+      "plan": {
+        "op": "KEEP_BOOKING"
+      },
+      "query": "#assert Business() reaches economicSuccess with pmin;",
+      "runner": {
+        "diagnostic": "PAT console is not configured",
+        "status": "UNAVAILABLE"
+      },
+      "scenario": "reference",
+      "snapshot_hash": "5fa4a3d28c6cce780f9731f4da35e9bccc2767f76c5b6ff989c6331b9d8b1019",
+      "strategy": "baseline"
+    },
+    {
+      "assumptions": [
+        "claim",
+        "claim_given_failure",
+        "fee",
+        "normal_adverse",
+        "recovery"
+      ],
+      "bounds": [
+        -100015000,
+        -8000
+      ],
+      "closure": [
+        "dispute",
+        "failure"
+      ],
+      "compiler": "agentguard-1",
+      "expected_value": "-310100",
+      "goal": {
+        "days": 30,
+        "discount_cents": null,
+        "max_extra_charge_cents": 0,
+        "type": "amend"
+      },
+      "graph": [
+        {
+          "edges": [
+            {
+              "event": "@availability yes",
+              "p": "7/10",
+              "to": 1
+            },
+            {
+              "event": "@availability no",
+              "p": "3/10",
+              "to": 3
+            }
+          ],
+          "id": 0,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "guarantee fulfilled",
+              "p": "1",
+              "to": 2
+            }
+          ],
+          "id": 1,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [],
+          "id": 2,
+          "state": {
+            "amended": true,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -8000
+        },
+        {
+          "edges": [
+            {
+              "event": "promised service unavailable",
+              "p": "1",
+              "to": 4
+            }
+          ],
+          "id": 3,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "failure",
+              "p": "1",
+              "to": 5
+            }
+          ],
+          "id": 4,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "recovery paid once",
+              "p": "1",
+              "to": 6
+            }
+          ],
+          "id": 5,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [
+              "failure"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "dispute",
+              "p": "1",
+              "to": 7
+            }
+          ],
+          "id": 6,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [
+              "failure"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -15000
+        },
+        {
+          "edges": [
+            {
+              "event": "claim_given_failure yes",
+              "p": "1/100",
+              "to": 8
+            },
+            {
+              "event": "claim_given_failure no",
+              "p": "99/100",
+              "to": 10
+            }
+          ],
+          "id": 7,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [
+              "failure",
+              "dispute"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -15000
+        },
+        {
+          "edges": [
+            {
+              "event": "claim settled",
+              "p": "1",
+              "to": 9
+            }
+          ],
+          "id": 8,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [
+              "failure",
+              "dispute"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -15000
+        },
+        {
+          "edges": [],
+          "id": 9,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [
+              "failure",
+              "dispute"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -100015000
+        },
+        {
+          "edges": [
+            {
+              "event": "no additional claim",
+              "p": "1",
+              "to": 11
+            }
+          ],
+          "id": 10,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [
+              "failure",
+              "dispute"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -15000
+        },
+        {
+          "edges": [],
+          "id": 11,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [
+              "failure",
+              "dispute"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -15000
+        }
+      ],
+      "interval": null,
+      "model_hash": "a88f6ff0807551e72be9e8b2919ca048f9a73c73cdf8f600d7b42fd42a2b21d7",
+      "operations": [
+        "GUARANTEE_AMENDMENT"
+      ],
+      "oracle": "-310100",
+      "pack_hash": "d46f27e05735a155fa06f87cdb1c0d30e6654f5e44cc4c97ade1634ea52b7155",
+      "paths": [
+        {
+          "contribution": "-5600",
+          "events": [
+            "@availability yes",
+            "guarantee fulfilled"
+          ],
+          "node": 2,
+          "p": "7/10",
+          "utility": -8000,
+          "value": -8000
+        },
+        {
+          "contribution": "-300045",
+          "events": [
+            "@availability no",
+            "promised service unavailable",
+            "failure",
+            "recovery paid once",
+            "dispute",
+            "claim_given_failure yes",
+            "claim settled"
+          ],
+          "node": 9,
+          "p": "3/1000",
+          "utility": -100015000,
+          "value": -100015000
+        },
+        {
+          "contribution": "-4455",
+          "events": [
+            "@availability no",
+            "promised service unavailable",
+            "failure",
+            "recovery paid once",
+            "dispute",
+            "claim_given_failure no",
+            "no additional claim"
+          ],
+          "node": 11,
+          "p": "297/1000",
+          "utility": -15000,
+          "value": -15000
+        }
+      ],
+      "pcsp": "var successFlag = false;\n#define economicSuccess successFlag == true;\nGood() = success{successFlag = true;} -> Skip;\nBad() = no_success -> Skip;\nBusiness() = N0();\nN0() = pcase { 7 : edge0_0 -> N1() 3 : edge0_1 -> N3() };\nN1() = edge1_0 -> N2();\nN2() = Good();\nN3() = edge3_0 -> N4();\nN4() = edge4_0 -> N5();\nN5() = edge5_0 -> N6();\nN6() = edge6_0 -> N7();\nN7() = pcase { 1 : edge7_0 -> N8() 99 : edge7_1 -> N10() };\nN8() = edge8_0 -> N9();\nN9() = Bad();\nN10() = edge10_0 -> N11();\nN11() = pcase { 100000 : Good() 7 : Bad() };\n#assert Business() reaches economicSuccess with pmin;\n",
+      "plan": {
+        "days": 30,
+        "op": "GUARANTEE_AMENDMENT"
+      },
+      "query": "#assert Business() reaches economicSuccess with pmin;",
+      "runner": {
+        "diagnostic": "PAT console is not configured",
+        "status": "UNAVAILABLE"
+      },
+      "scenario": "adverse",
+      "snapshot_hash": "5fa4a3d28c6cce780f9731f4da35e9bccc2767f76c5b6ff989c6331b9d8b1019",
+      "strategy": "guarantee"
+    },
+    {
+      "assumptions": [
+        "claim",
+        "claim_given_failure",
+        "fee",
+        "normal_available",
+        "recovery"
+      ],
+      "bounds": [
+        -100015000,
+        -8000
+      ],
+      "closure": [
+        "dispute",
+        "failure"
+      ],
+      "compiler": "agentguard-1",
+      "expected_value": "-209400",
+      "goal": {
+        "days": 30,
+        "discount_cents": null,
+        "max_extra_charge_cents": 0,
+        "type": "amend"
+      },
+      "graph": [
+        {
+          "edges": [
+            {
+              "event": "@availability yes",
+              "p": "4/5",
+              "to": 1
+            },
+            {
+              "event": "@availability no",
+              "p": "1/5",
+              "to": 3
+            }
+          ],
+          "id": 0,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "guarantee fulfilled",
+              "p": "1",
+              "to": 2
+            }
+          ],
+          "id": 1,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [],
+          "id": 2,
+          "state": {
+            "amended": true,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -8000
+        },
+        {
+          "edges": [
+            {
+              "event": "promised service unavailable",
+              "p": "1",
+              "to": 4
+            }
+          ],
+          "id": 3,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "failure",
+              "p": "1",
+              "to": 5
+            }
+          ],
+          "id": 4,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "recovery paid once",
+              "p": "1",
+              "to": 6
+            }
+          ],
+          "id": 5,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [
+              "failure"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "dispute",
+              "p": "1",
+              "to": 7
+            }
+          ],
+          "id": 6,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [
+              "failure"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -15000
+        },
+        {
+          "edges": [
+            {
+              "event": "claim_given_failure yes",
+              "p": "1/100",
+              "to": 8
+            },
+            {
+              "event": "claim_given_failure no",
+              "p": "99/100",
+              "to": 10
+            }
+          ],
+          "id": 7,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [
+              "failure",
+              "dispute"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -15000
+        },
+        {
+          "edges": [
+            {
+              "event": "claim settled",
+              "p": "1",
+              "to": 9
+            }
+          ],
+          "id": 8,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [
+              "failure",
+              "dispute"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -15000
+        },
+        {
+          "edges": [],
+          "id": 9,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [
+              "failure",
+              "dispute"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -100015000
+        },
+        {
+          "edges": [
+            {
+              "event": "no additional claim",
+              "p": "1",
+              "to": 11
+            }
+          ],
+          "id": 10,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [
+              "failure",
+              "dispute"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -15000
+        },
+        {
+          "edges": [],
+          "id": 11,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": true,
+            "hold": "none",
+            "occurred": [
+              "failure",
+              "dispute"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -15000
+        }
+      ],
+      "interval": null,
+      "model_hash": "2b73a924b9557fb6c22d9ca700d1f533b4b6bec83e2fd6bd4f550de9327cdf42",
+      "operations": [
+        "GUARANTEE_AMENDMENT"
+      ],
+      "oracle": "-209400",
+      "pack_hash": "d46f27e05735a155fa06f87cdb1c0d30e6654f5e44cc4c97ade1634ea52b7155",
+      "paths": [
+        {
+          "contribution": "-6400",
+          "events": [
+            "@availability yes",
+            "guarantee fulfilled"
+          ],
+          "node": 2,
+          "p": "4/5",
+          "utility": -8000,
+          "value": -8000
+        },
+        {
+          "contribution": "-200030",
+          "events": [
+            "@availability no",
+            "promised service unavailable",
+            "failure",
+            "recovery paid once",
+            "dispute",
+            "claim_given_failure yes",
+            "claim settled"
+          ],
+          "node": 9,
+          "p": "1/500",
+          "utility": -100015000,
+          "value": -100015000
+        },
+        {
+          "contribution": "-2970",
+          "events": [
+            "@availability no",
+            "promised service unavailable",
+            "failure",
+            "recovery paid once",
+            "dispute",
+            "claim_given_failure no",
+            "no additional claim"
+          ],
+          "node": 11,
+          "p": "99/500",
+          "utility": -15000,
+          "value": -15000
+        }
+      ],
+      "pcsp": "var successFlag = false;\n#define economicSuccess successFlag == true;\nGood() = success{successFlag = true;} -> Skip;\nBad() = no_success -> Skip;\nBusiness() = N0();\nN0() = pcase { 4 : edge0_0 -> N1() 1 : edge0_1 -> N3() };\nN1() = edge1_0 -> N2();\nN2() = Good();\nN3() = edge3_0 -> N4();\nN4() = edge4_0 -> N5();\nN5() = edge5_0 -> N6();\nN6() = edge6_0 -> N7();\nN7() = pcase { 1 : edge7_0 -> N8() 99 : edge7_1 -> N10() };\nN8() = edge8_0 -> N9();\nN9() = Bad();\nN10() = edge10_0 -> N11();\nN11() = pcase { 100000 : Good() 7 : Bad() };\n#assert Business() reaches economicSuccess with pmin;\n",
+      "plan": {
+        "days": 30,
+        "op": "GUARANTEE_AMENDMENT"
+      },
+      "query": "#assert Business() reaches economicSuccess with pmin;",
+      "runner": {
+        "diagnostic": "PAT console is not configured",
+        "status": "UNAVAILABLE"
+      },
+      "scenario": "reference",
+      "snapshot_hash": "5fa4a3d28c6cce780f9731f4da35e9bccc2767f76c5b6ff989c6331b9d8b1019",
+      "strategy": "guarantee"
+    },
+    {
+      "assumptions": [
+        "fee",
+        "normal_adverse",
+        "retention"
+      ],
+      "bounds": [
+        -15000,
+        -8000
+      ],
+      "closure": [
+        "rejection"
+      ],
+      "compiler": "agentguard-1",
+      "expected_value": "-10100",
+      "goal": {
+        "days": 30,
+        "discount_cents": null,
+        "max_extra_charge_cents": 0,
+        "type": "amend"
+      },
+      "graph": [
+        {
+          "edges": [
+            {
+              "event": "@availability yes",
+              "p": "7/10",
+              "to": 1
+            },
+            {
+              "event": "@availability no",
+              "p": "3/10",
+              "to": 3
+            }
+          ],
+          "id": 0,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "binding hold",
+              "p": "1",
+              "to": 2
+            }
+          ],
+          "id": 1,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "confirm held date",
+              "p": "1",
+              "to": 5
+            }
+          ],
+          "id": 2,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "held",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "unavailable",
+              "p": "1",
+              "to": 4
+            }
+          ],
+          "id": 3,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "preserve original",
+              "p": "1",
+              "to": 6
+            }
+          ],
+          "id": 4,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "failed",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [],
+          "id": 5,
+          "state": {
+            "amended": true,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "held",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -8000
+        },
+        {
+          "edges": [
+            {
+              "event": "rejection",
+              "p": "1",
+              "to": 7
+            }
+          ],
+          "id": 6,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "failed",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "lost repeat contribution",
+              "p": "1",
+              "to": 8
+            }
+          ],
+          "id": 7,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "failed",
+            "occurred": [
+              "rejection"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [],
+          "id": 8,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "failed",
+            "occurred": [
+              "rejection"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -15000
+        }
+      ],
+      "interval": null,
+      "model_hash": "590f5f9adb525e88c42715ba21c12cad133f97f176bfbde5a583fc71d26693a1",
+      "operations": [
+        "CONFIRM_AMENDMENT",
+        "KEEP_BOOKING",
+        "REQUEST_AMENDMENT"
+      ],
+      "oracle": "-10100",
+      "pack_hash": "d46f27e05735a155fa06f87cdb1c0d30e6654f5e44cc4c97ade1634ea52b7155",
+      "paths": [
+        {
+          "contribution": "-5600",
+          "events": [
+            "@availability yes",
+            "binding hold",
+            "confirm held date"
+          ],
+          "node": 5,
+          "p": "7/10",
+          "utility": -8000,
+          "value": -8000
+        },
+        {
+          "contribution": "-4500",
+          "events": [
+            "@availability no",
+            "unavailable",
+            "preserve original",
+            "rejection",
+            "lost repeat contribution"
+          ],
+          "node": 8,
+          "p": "3/10",
+          "utility": -15000,
+          "value": -15000
+        }
+      ],
+      "pcsp": "var successFlag = false;\n#define economicSuccess successFlag == true;\nGood() = success{successFlag = true;} -> Skip;\nBad() = no_success -> Skip;\nBusiness() = N0();\nN0() = pcase { 7 : edge0_0 -> N1() 3 : edge0_1 -> N3() };\nN1() = edge1_0 -> N2();\nN2() = edge2_0 -> N5();\nN3() = edge3_0 -> N4();\nN4() = edge4_0 -> N6();\nN5() = Good();\nN6() = edge6_0 -> N7();\nN7() = edge7_0 -> N8();\nN8() = Bad();\n#assert Business() reaches economicSuccess with pmin;\n",
+      "plan": {
+        "op": "SEQUENCE",
+        "steps": [
+          {
+            "days": 30,
+            "op": "REQUEST_AMENDMENT"
+          },
+          {
+            "op": "IF",
+            "otherwise": {
+              "op": "KEEP_BOOKING"
+            },
+            "predicate": "AMENDMENT_APPROVED",
+            "then": {
+              "op": "CONFIRM_AMENDMENT"
+            }
+          }
+        ]
+      },
+      "query": "#assert Business() reaches economicSuccess with pmin;",
+      "runner": {
+        "diagnostic": "PAT console is not configured",
+        "status": "UNAVAILABLE"
+      },
+      "scenario": "adverse",
+      "snapshot_hash": "5fa4a3d28c6cce780f9731f4da35e9bccc2767f76c5b6ff989c6331b9d8b1019",
+      "strategy": "conditional"
+    },
+    {
+      "assumptions": [
+        "fee",
+        "normal_available",
+        "retention"
+      ],
+      "bounds": [
+        -15000,
+        -8000
+      ],
+      "closure": [
+        "rejection"
+      ],
+      "compiler": "agentguard-1",
+      "expected_value": "-9400",
+      "goal": {
+        "days": 30,
+        "discount_cents": null,
+        "max_extra_charge_cents": 0,
+        "type": "amend"
+      },
+      "graph": [
+        {
+          "edges": [
+            {
+              "event": "@availability yes",
+              "p": "4/5",
+              "to": 1
+            },
+            {
+              "event": "@availability no",
+              "p": "1/5",
+              "to": 3
+            }
+          ],
+          "id": 0,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "binding hold",
+              "p": "1",
+              "to": 2
+            }
+          ],
+          "id": 1,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "confirm held date",
+              "p": "1",
+              "to": 5
+            }
+          ],
+          "id": 2,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "held",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "unavailable",
+              "p": "1",
+              "to": 4
+            }
+          ],
+          "id": 3,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "none",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "preserve original",
+              "p": "1",
+              "to": 6
+            }
+          ],
+          "id": 4,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": false,
+            "failed": false,
+            "hold": "failed",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [],
+          "id": 5,
+          "state": {
+            "amended": true,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "held",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -8000
+        },
+        {
+          "edges": [
+            {
+              "event": "rejection",
+              "p": "1",
+              "to": 7
+            }
+          ],
+          "id": 6,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "failed",
+            "occurred": [],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [
+            {
+              "event": "lost repeat contribution",
+              "p": "1",
+              "to": 8
+            }
+          ],
+          "id": 7,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "failed",
+            "occurred": [
+              "rejection"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": 0
+        },
+        {
+          "edges": [],
+          "id": 8,
+          "state": {
+            "amended": false,
+            "declined": false,
+            "done": true,
+            "failed": false,
+            "hold": "failed",
+            "occurred": [
+              "rejection"
+            ],
+            "seeking_amend": true,
+            "sold": false,
+            "upgrade_attempted": false,
+            "upgraded": false
+          },
+          "value": -15000
+        }
+      ],
+      "interval": null,
+      "model_hash": "29b188252d6d25ed5163edc7865a252da1a0e6c561a6d705ed53245240b0ecbf",
+      "operations": [
+        "CONFIRM_AMENDMENT",
+        "KEEP_BOOKING",
+        "REQUEST_AMENDMENT"
+      ],
+      "oracle": "-9400",
+      "pack_hash": "d46f27e05735a155fa06f87cdb1c0d30e6654f5e44cc4c97ade1634ea52b7155",
+      "paths": [
+        {
+          "contribution": "-6400",
+          "events": [
+            "@availability yes",
+            "binding hold",
+            "confirm held date"
+          ],
+          "node": 5,
+          "p": "4/5",
+          "utility": -8000,
+          "value": -8000
+        },
+        {
+          "contribution": "-3000",
+          "events": [
+            "@availability no",
+            "unavailable",
+            "preserve original",
+            "rejection",
+            "lost repeat contribution"
+          ],
+          "node": 8,
+          "p": "1/5",
+          "utility": -15000,
+          "value": -15000
+        }
+      ],
+      "pcsp": "var successFlag = false;\n#define economicSuccess successFlag == true;\nGood() = success{successFlag = true;} -> Skip;\nBad() = no_success -> Skip;\nBusiness() = N0();\nN0() = pcase { 4 : edge0_0 -> N1() 1 : edge0_1 -> N3() };\nN1() = edge1_0 -> N2();\nN2() = edge2_0 -> N5();\nN3() = edge3_0 -> N4();\nN4() = edge4_0 -> N6();\nN5() = Good();\nN6() = edge6_0 -> N7();\nN7() = edge7_0 -> N8();\nN8() = Bad();\n#assert Business() reaches economicSuccess with pmin;\n",
+      "plan": {
+        "op": "SEQUENCE",
+        "steps": [
+          {
+            "days": 30,
+            "op": "REQUEST_AMENDMENT"
+          },
+          {
+            "op": "IF",
+            "otherwise": {
+              "op": "KEEP_BOOKING"
+            },
+            "predicate": "AMENDMENT_APPROVED",
+            "then": {
+              "op": "CONFIRM_AMENDMENT"
+            }
+          }
+        ]
+      },
+      "query": "#assert Business() reaches economicSuccess with pmin;",
+      "runner": {
+        "diagnostic": "PAT console is not configured",
+        "status": "UNAVAILABLE"
+      },
+      "scenario": "reference",
+      "snapshot_hash": "5fa4a3d28c6cce780f9731f4da35e9bccc2767f76c5b6ff989c6331b9d8b1019",
+      "strategy": "conditional"
+    }
+  ],
+  "pack_version": 1,
+  "profile": {
+    "floor_cents": null,
+    "loss_multiplier": 1,
+    "minimum_gain_cents": 0
+  },
+  "profile_version": 1,
+  "proposal": {
+    "booking_id": "B001",
+    "candidate_strategies": [
+      {
+        "plan": {
+          "days": 30,
+          "op": "GUARANTEE_AMENDMENT"
+        },
+        "strategy_id": "guarantee"
+      },
+      {
+        "plan": {
+          "op": "SEQUENCE",
+          "steps": [
+            {
+              "days": 30,
+              "op": "REQUEST_AMENDMENT"
+            },
+            {
+              "op": "IF",
+              "otherwise": {
+                "op": "KEEP_BOOKING"
+              },
+              "predicate": "AMENDMENT_APPROVED",
+              "then": {
+                "op": "CONFIRM_AMENDMENT"
+              }
+            }
+          ]
+        },
+        "strategy_id": "conditional"
+      }
+    ],
+    "goal": {
+      "days": 30,
+      "discount_cents": null,
+      "max_extra_charge_cents": 0,
+      "type": "amend"
+    },
+    "needs_clarification": false,
+    "request_id": "Rc0f3b6a33659b9e46ee5"
+  },
+  "reason": "PAT console is not configured; oracle preview only",
+  "request_id": "Rc0f3b6a33659b9e46ee5",
+  "snapshot": {
+    "as_of": "2026-11-20",
+    "booking_id": "B001",
+    "context": "normal",
+    "currency": "SGD",
+    "departure": "2026-12-20",
+    "kind": "booked",
+    "package": "Kyoto by Rail",
+    "policy": "binding_hold_v1",
+    "slots": {
+      "14": "2027-01-03",
+      "30": "2027-01-19"
+    },
+    "supplier_mock": "held",
+    "supplier_version": 1,
+    "upgrade_prices_cents": [
+      0,
+      5000,
+      7500
+    ],
+    "upgraded": false,
+    "version": 1
+  },
+  "source": "Scripted regression fixture",
+  "status": "NEEDS_REVIEW",
+  "strategy": null,
+  "terms": null
+}

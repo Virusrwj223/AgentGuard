@@ -8,12 +8,23 @@ from integrations.handoff import call
 from app.contracts import Proposal,Draft,Gap,Summary,Id
 server=FastMCP("AgentGuard")
 role=os.environ.get("AG_ROLE","sales")
-if role not in ("sales","knowledge","risk","audit") or not os.environ.get("AG_ROLE_KEY"):
+if role not in ("sales","knowledge","risk","audit","web_worker") or not os.environ.get("AG_ROLE_KEY"):
     raise SystemExit("Set AG_ROLE and its matching scoped AG_ROLE_KEY")
 @server.tool()
 def health()->dict:
     """Report backend and actual solver availability."""
     return call("/health")
+if role=="web_worker":
+    @server.tool()
+    def next_web_task(wait_seconds:int=15)->dict:
+        """Wait for a website intake or sales planning task. An idle response is normal."""
+        return call("/api/web-worker/next","POST",{"wait_seconds":wait_seconds})
+
+    @server.tool()
+    def complete_web_task(job_id:str,lease:str,answer:dict)->dict:
+        """Return extracted intake fields or a proposed plan for this specific active task."""
+        return call("/api/web-worker/submit","POST",{"job_id":job_id,"lease":lease,"answer":answer})
+
 if role=="sales":
     @server.tool()
     def get_booking_context()->dict:

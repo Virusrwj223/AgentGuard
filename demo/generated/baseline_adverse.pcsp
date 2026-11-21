@@ -6,5 +6,5 @@ Business() = N0();
 N0() = edge0_0 -> N1();
 N1() = edge1_0 -> N2();
 N2() = edge2_0 -> N3();
-N3() = Good();
+N3() = pcase { 1 : Good() 1 : Bad() };
 #assert Business() reaches economicSuccess with pmin;

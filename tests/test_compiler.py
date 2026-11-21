@@ -30,7 +30,13 @@ class Mathematics(unittest.TestCase):
     def test_high_probability_of_profit(self):
         self.assertEqual(self.reduce([(".99",100),(".01",-100000)],1)[0],-901)
     def test_degenerate(self):
-        for x in [-300,0,400]:self.assertEqual(self.reduce([(1,x)],1)[0],x)
+        for x in [-300,0,400]:
+            score,model,run=self.reduce([(1,x)],1)
+            self.assertEqual(score,x)
+            self.assertEqual(F(run["probability"]),F(1,2))
+            self.assertIn("pcase { 1 : Good() 1 : Bad() }",model)
+            with self.assertRaises(Review):
+                interval({"status":"SUCCESS","probability":"1"},x,x,F(x))
         self.assertEqual(self.reduce([(".5",-100),(".5",-20)],1)[0],-60)
     def test_overflow(self):
         with self.assertRaises(Review):self.reduce([(1,-2**30)],3)
@@ -40,7 +46,8 @@ class Mathematics(unittest.TestCase):
     def test_verdict_parser(self):
         text="The Assertion (Business() reaches economicSuccess with pmin) is Valid with Min Probability 0.25;"
         self.assertEqual(parse(text),F(1,4))
-        for x in [text*2,text.replace("pmin","pmax"),text.replace("Min","Max"),text.replace("0.25","NaN"),text.replace("0.25","1.01"),"Precision 0.25","",text+"\nParsing error"]:
+        qualitative="The Assertion (Business() reaches economicSuccess with pmin) is VALID."
+        for x in [qualitative,text*2,text.replace("pmin","pmax"),text.replace("Min","Max"),text.replace("0.25","NaN"),text.replace("0.25","1.01"),"Precision 0.25","",text+"\nParsing error"]:
             with self.assertRaises(Review):parse(x)
 class Composition(unittest.TestCase):
     def setUp(self):

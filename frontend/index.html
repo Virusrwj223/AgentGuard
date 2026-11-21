@@ -1,8 +1,76 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AgentGuard · Customer desk</title><link rel="stylesheet" href="/static/style.css"><script defer src="/static/customer.js"></script></head><body>
-<header><a class="brand" href="/">◈ AgentGuard</a><nav><a class="active" href="/">Customer desk</a><a href="/founder">Founder console</a></nav><span class="mode" id="mode">Connecting</span></header>
-<main><div class="intro"><p class="eyebrow">NORTHLINE TRAVEL / CUSTOMER DESK</p><h1>Manage your trip<span>.</span></h1><p>Request a change and review the agency’s exact terms before you confirm.</p></div>
-<div class="layout"><section class="panel"><div class="section-title"><h2>Trip inquiry</h2><span class="minor">SGD</span></div><label for="message">What would you like to change?</label><textarea id="message" rows="4" placeholder="Can I move my trip 30 days later at no extra cost?"></textarea><div class="buttons"><button id="send">Prepare QwenWork handoff</button><button class="secondary" id="refresh">Check response</button></div>
-<details id="handoff"><summary>QwenWork handoff</summary><p>Use the sales credential in your private QwenWork session. The customer desk displays the result after the sales tool evaluates the plan.</p><pre id="handoffInfo">Send an inquiry first.</pre><button class="secondary" id="copy">Copy session handoff</button></details>
-<hr><h3>Replay a sample inquiry</h3><p class="hint">These scripted plans let you explore the model locally.</p><div class="buttons"><select id="case" aria-label="Sample inquiry"><option value="amend">Change the date at no extra cost</option><option value="discount">Request a new-sale discount</option><option value="upgrade">Ask for a room upgrade</option><option value="compound">Move the trip and upgrade</option><option value="ambiguous">Ask for an unspecified date</option><option value="unsupported">Convert loyalty points</option></select><button class="secondary" id="replay">Run sample</button></div>
-</section><aside class="ticket"><p class="eyebrow">YOUR ITINERARY</p><div class="rail" aria-hidden="true">◎ ──────── ◈</div><h2 id="trip">Loading trip</h2><dl id="booking"></dl><label for="fixture">Open a fresh demo booking</label><select id="fixture"><option value="B001">Kyoto by Rail · booked</option><option value="B002">Penang Weekend · new quote</option><option value="B003">Seoul in Winter · peak</option></select><button class="secondary" id="reset">Open booking</button></aside></div>
-<section class="panel result" aria-live="polite"><div class="section-title"><h2>Agency response</h2><span class="tag" id="status">Awaiting inquiry</span></div><p id="reply">Your decision and any available follow-up will appear here.</p><button id="confirm" hidden>Accept exact terms and simulate booking</button></section><p role="alert" id="error"></p></main><footer>Northline Travel is fictional. All bookings and supplier actions are simulated.</footer></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eef5f8">
+  <title>Northline Travel · Trip desk</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script defer src="/static/customer.js"></script>
+</head>
+<body>
+<main class="desk">
+  <section class="chat panel" aria-label="Travel concierge">
+    <header class="chat-head">
+      <div class="wordmark" aria-label="Northline Travel"><span class="brand-mark" aria-hidden="true"></span>Northline<span class="brand-sub">Travel</span></div>
+      <span class="concierge-label"><i aria-hidden="true"></i>Travel concierge</span>
+    </header>
+    <div class="conversation" id="conversation">
+      <section class="welcome" id="welcome">
+        <div class="compass" aria-hidden="true"><i></i><b></b><span>N</span></div>
+        <h1>Where to <em>next?</em></h1>
+        <p>Tell me about the trip you have in mind. I’ll put together your itinerary and work through any requests with you.</p>
+        <div id="starters" class="starters" aria-label="Suggested messages">
+          <button data-prompt="Plan a trip to Bali"><span class="quick-icon plane" aria-hidden="true">✈</span>Plan a trip to Bali<span class="go" aria-hidden="true">↗</span></button>
+          <button data-prompt="List my trips"><span class="quick-icon" aria-hidden="true">▤</span>Find my trips<span class="go" aria-hidden="true">↗</span></button>
+          <button data-prompt="Explain an offer"><span class="quick-icon" aria-hidden="true">?</span>Explain an offer<span class="go" aria-hidden="true">↗</span></button>
+        </div>
+      </section>
+      <div class="transcript" id="messages" role="log" aria-live="polite" aria-relevant="additions"></div>
+      <p id="activity" class="activity" role="status" hidden></p>
+    </div>
+    <div class="dock">
+      <div class="followups" id="hints" aria-label="Chat suggestions"></div>
+      <p id="error" class="error" role="alert" hidden></p>
+      <form id="composer">
+        <label for="message" class="sr-only">Message your travel concierge</label>
+        <textarea id="message" rows="1" maxlength="1800" placeholder="Message your travel concierge…"></textarea>
+        <button id="send" class="send" aria-label="Send message" title="Send message"><span aria-hidden="true">↑</span></button>
+      </form>
+      <div class="composer-note"><span class="note-dot"></span>Demo reservations · No payment required</div>
+    </div>
+  </section>
+
+  <aside class="wallet panel" aria-label="Booking itinerary">
+    <details id="wallet-details" open>
+      <summary><h2>Your itinerary</h2><span id="phase" class="phase">Not booked</span><span class="mobile-caret" aria-hidden="true">⌄</span></summary>
+      <div class="wallet-content">
+        <div class="booking-controls"><label for="booking-select">Your bookings</label><select id="booking-select" aria-label="Choose a booking"></select><button id="delete-booking" type="button" title="Permanently delete this demo booking" aria-label="Permanently delete this demo booking">🗑</button><button id="new-booking" type="button" title="Plan another trip">＋</button></div>
+        <div class="cover" id="destination-cover" hidden><img id="destination-photo" alt="">
+          <div class="cover-location"><a id="photo-credit" target="_blank" rel="noopener noreferrer"></a></div>
+        </div>
+        <div class="trip-title"><span class="minor">Trip details</span><h3 id="trip-name">Your next trip</h3><p id="booking-ref">Details appear as you plan.</p></div>
+        <dl class="route" aria-label="Travel route">
+          <div><dt>From</dt><dd id="origin">—</dd></div>
+          <div><dt>To</dt><dd id="destination">—</dd></div>
+        </dl>
+        <dl class="trip-fields">
+          <div><dt>Departure</dt><dd id="departure">—</dd></div><div><dt>Return</dt><dd id="return-date">—</dd></div>
+          <div><dt>Travellers</dt><dd id="travellers">—</dd></div><div><dt>Lead traveller</dt><dd id="lead">—</dd></div>
+          <div><dt>Cabin</dt><dd id="cabin">—</dd></div>
+          <div><dt>Seat preference</dt><dd id="seat-preference">—</dd></div>
+        </dl>
+        <section id="flight-details" class="flight-details" aria-label="Airline and seat information" hidden>
+          <p id="operating-airlines" hidden></p>
+          <ul id="route-airlines" hidden></ul>
+          <ul id="seat-maps" hidden></ul>
+          <p id="seat-status" hidden></p>
+        </section>
+        <p id="extras" class="extras" hidden></p>
+        <div class="fare"><span id="price-label">Trip total</span><strong id="price">—</strong></div>
+        <a id="fare-source" hidden target="_blank" rel="noopener noreferrer">View advertised fare source</a>
+      </div>
+    </details>
+  </aside>
+</main>
+</body>
+</html>

@@ -5,7 +5,7 @@ import math
 from dataclasses import dataclass, field, replace
 from datetime import date
 from fractions import Fraction as F
-from .contracts import Conditional, Sequence, Request, Price, Upgrade
+from .contracts import Conditional, Sequence, Request, Price, Credit, Upgrade, UpdateSeatPreference
 
 QUERY = "#assert Business() reaches economicSuccess with pmin;"
 INT_MAX = 2**31 - 1
@@ -96,14 +96,19 @@ def emit(graph,k,low,high):
         else:
             x=bounded(n.value if n.value>=0 else n.value*k)
             check(low<=x<=high,"Invalid utility bounds")
-            q=F(1) if high==low else F(x-low,high-low)
+            # PAT can report a deterministic reachability assertion as simply
+            # "VALID", without a numeric probability. A fair terminal probe
+            # keeps constant-utility models measurable. The decoder checks
+            # that PAT returns exactly 1/2 before accepting the known value.
+            q=F(1,2) if high==low else F(x-low,high-low)
             rhs="Good()" if q==1 else "Bad()" if q==0 else choice([q,1-q],["Good()","Bad()"])
         lines.append(f"N{i}() = {rhs};")
     return "\n".join(lines+[QUERY,""])
 
 class Compiler:
-    def __init__(self,pack,booking,goal,scenario,baseline=False):
+    def __init__(self,pack,booking,goal,scenario,baseline=False,revision=None):
         self.pack,self.booking,self.goal,self.scenario=pack,booking,goal,scenario
+        self.revision=revision
         self.baseline=baseline
         self.used=set()
         self.closure=set()
@@ -111,10 +116,15 @@ class Compiler:
         self.terms={}
         check(booking["currency"]==pack["currency"]=="SGD" and booking["policy"]=="binding_hold_v1","Unsupported currency or supplier policy")
         lead=(date.fromisoformat(booking["departure"])-date.fromisoformat(booking["as_of"])).days
-        check((booking["context"]=="normal" and 8<=lead<=90) or (booking["context"]=="peak" and 1<=lead<=7),"Unsupported seasonal lead-time context")
+        if goal.type == "credit":
+            check(lead >= 0 and booking.get("paid_cents", 0) > 0, "Credit requires a current priced booking")
+        else:
+            check((booking["context"]=="normal" and 8<=lead<=90) or
+                  (booking["context"]=="peak" and 1<=lead<=7) or
+                  (booking["context"]=="advance" and lead>=91),"Unsupported seasonal lead-time context")
         check((goal.type=="sale")==(booking["kind"]=="quote"),"Goal incompatible with booking status")
         self.g=Graph(dict(hold="none",done=False,amended=False,failed=False,upgraded=False,upgrade_attempted=False,declined=False,sold=False,
-                          seeking_amend=goal.type in ("amend","amend_upgrade"),occurred=[]))
+                          seeking_amend=goal.type in ("amend","amend_upgrade") or bool(revision and revision["inventory"]),seeking_credit=goal.type=="credit" or bool(revision and revision["credit_cents"] and not revision["inventory"]),credited=False,seat_preference_updated=False,occurred=[]))
     def number(self,ref,unit):
         rec=self.pack["records"].get(ref)
         check(rec and rec["approval_status"]=="approved_for_demo" and rec["units"]==unit,"Missing or unapproved parameter "+ref)
@@ -126,6 +136,11 @@ class Compiler:
         self.used.add(ref)
         return bounded(v)
     def prob(self,ref,args):
+        if ref=="@revision_availability":
+            from .trip_intake import booking_context
+            target = self.revision["fields"].get("departure",self.booking["departure"])
+            context = booking_context((date.fromisoformat(target)-date.fromisoformat(self.booking["as_of"])).days)
+            ref=self.pack["scenarios"][context][self.scenario]
         if ref=="@availability":
             ref=self.pack["scenarios"][self.booking["context"]][self.scenario]
         if ref=="@consent":
@@ -194,8 +209,19 @@ class Compiler:
             return self.apply(p.then,left)+self.apply(p.otherwise,right)
         name=p.op
         args=p.model_dump(exclude={"op"})
+        if isinstance(p,Credit):
+            args["prior_credit_cents"] = self.booking.get("credit_cents",0)
         item=self.pack["operations"].get(name)
         check(item and set(item["coverage"])==FAMILIES and all(v=="covered" or v.startswith("N/A: ") and len(v)>8 for v in item["coverage"].values()),"Unresolved risk coverage: "+name)
+        if name in ("REVISE_ITINERARY","UPDATE_ITINERARY_DETAILS"):
+            check(self.goal.type == "itinerary" and self.revision, "Missing validated itinerary revision")
+            check(self.revision["inventory"] == (name == "REVISE_ITINERARY"), "Operation does not cover revised fields")
+            if self.revision["inventory"]:
+                args.update({key: self.revision[key] for key in ("customer_delta", "supplier_delta")})
+            else:
+                args["customer_delta"] = self.revision["customer_delta"]
+                args["prior_credit_cost"] = self.revision["prior_credit_cents"] if self.revision["credit_cents"] else 0
+            self.terms["revision"] = self.revision
         deps=self.dependencies(item["tree"],args)
         check(set(self.pack["required_events"].get(name,[]))<=deps,"Required consequence omitted")
         self.closure |= deps
@@ -204,8 +230,19 @@ class Compiler:
             check(self.goal.type in ("amend","amend_upgrade") and p.days==self.goal.days and str(p.days) in self.booking["slots"],"Requested date outside approved slots")
         if isinstance(p,Price):
             check(self.goal.type=="sale" and self.goal.discount_cents<=p.discount_cents<=self.number("sale_price","SGD cents"),"Invalid sale adjustment")
+        if isinstance(p,Credit):
+            check(self.goal.type == "credit"
+                  and 0 < p.credit_cents <= min(self.booking["paid_cents"], self.goal.discount_cents),
+                  "Credit exceeds the requested or available amount")
+            args["prior_credit_cents"] = self.booking.get("credit_cents", 0)
+        if isinstance(p, UpdateSeatPreference):
+            check(
+                self.booking.get("self_service") and self.goal.type == "seat_preference"
+                and p.seat_preference == self.goal.seat_preference,
+                "Seat preference differs from the request or the booking does not support this change",
+            )
         if isinstance(p,Upgrade):
-            check(self.goal.type in ("upgrade","amend_upgrade") and p.charge_cents in self.booking["upgrade_prices_cents"] and not self.booking["upgraded"],"Upgrade unavailable")
+            check(self.goal.type in ("upgrade","amend_upgrade") and p.charge_cents in self.booking["upgrade_prices_cents"],"Upgrade unavailable")
         if not nodes:
             return []
         for i in nodes:
@@ -229,6 +266,13 @@ class Compiler:
                     check(s["amended"] or s["failed"] or s["hold"]=="failed","Unfulfilled amendment")
                 if "upgrade" in self.goal.type and (self.goal.type=="upgrade" or s["amended"]):
                     check(s["upgraded"] or s["declined"],"Unfulfilled upgrade")
+                if self.goal.type == "itinerary":
+                    check(s["amended"] or s["hold"]=="failed" or
+                          (not self.revision["inventory"] and s.get("details_updated")), "Unfulfilled revision")
+                if self.goal.type == "credit":
+                    check(s["credited"], "Credit was not fulfilled")
+                if self.goal.type == "seat_preference":
+                    check(s["seat_preference_updated"], "Seat preference was not updated")
                 if self.goal.type=="sale":
                     check(s["sold"],"Unfulfilled sale")
             check(self.ops!={"KEEP_BOOKING"},"Baseline cannot fulfil goal")

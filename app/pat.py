@@ -48,6 +48,12 @@ class Pat:
                     run=self.run(emit(g,1,0,1))
                     self.calibration.append(run)
                     check(run["status"]=="SUCCESS" and abs(F(run["probability"])-p)<=F(1,100000),"PAT calibration failed")
+                fixed=Graph()
+                fixed.branch(0,"constant",F(1),delta=1)
+                run=self.run(emit(fixed,1,1,1))
+                self.calibration.append(run)
+                check(run["status"]=="SUCCESS" and abs(F(run["probability"])-F(1,2))<=F(1,100000),
+                      "PAT constant-utility calibration failed")
                 self.ready=True
                 self.detail="PAT console calibrated"
             except (Review,OSError) as err:
@@ -96,7 +102,7 @@ def interval(run,lo,hi,exact):
     if run["status"]!="SUCCESS":
         raise Review("PAT "+run["status"])
     p=F(run["probability"])
-    expected=F(1) if hi==lo else (exact-lo)/(hi-lo)
-    decoded=lo+(hi-lo)*p
+    expected=F(1,2) if hi==lo else (exact-lo)/(hi-lo)
+    decoded=F(lo) if hi==lo else lo+(hi-lo)*p
     check(abs(p-expected)<=F(1,100000) and abs(decoded-exact)<=F(1,20),"Insufficient PAT precision or oracle discrepancy")
     return min(decoded,exact),max(decoded,exact)

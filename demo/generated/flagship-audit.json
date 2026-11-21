@@ -16,12 +16,13 @@
       "worst_oracle": "-10100"
     }
   ],
-  "decision_id": "Df2a45fdae3f78dd30f25",
+  "decision_id": "D2136ddbbd4da209add1a",
   "message": "Your request is with the agency for review. Your booking is unchanged.",
   "mode": "Exact preview",
   "models": [
     {
       "assumptions": [
+        "credit_retention",
         "retention"
       ],
       "bounds": [
@@ -29,6 +30,7 @@
         -15000
       ],
       "closure": [
+        "credit_declined",
         "rejection"
       ],
       "compiler": "agentguard-1",
@@ -51,12 +53,14 @@
           "id": 0,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -74,12 +78,14 @@
           "id": 1,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -97,6 +103,7 @@
           "id": 2,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
@@ -105,6 +112,7 @@
               "rejection"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -116,6 +124,7 @@
           "id": 3,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
@@ -124,6 +133,7 @@
               "rejection"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -132,12 +142,12 @@
         }
       ],
       "interval": null,
-      "model_hash": "0a13338513dcf1910c49f4448e7ef830a1f91c557ff744a741e20c89e27f27b6",
+      "model_hash": "020ba70b26d0bd50e1bcfe6ba23df6336d3a118adb952d7566cd2921b9de2f4b",
       "operations": [
         "KEEP_BOOKING"
       ],
       "oracle": "-15000",
-      "pack_hash": "d46f27e05735a155fa06f87cdb1c0d30e6654f5e44cc4c97ade1634ea52b7155",
+      "pack_hash": "9df4ef4f4713fc89e4f7325d014f310405efdcee0ec3a5684811155111724590",
       "paths": [
         {
           "contribution": "-15000",
@@ -152,7 +162,7 @@
           "value": -15000
         }
       ],
-      "pcsp": "var successFlag = false;\n#define economicSuccess successFlag == true;\nGood() = success{successFlag = true;} -> Skip;\nBad() = no_success -> Skip;\nBusiness() = N0();\nN0() = edge0_0 -> N1();\nN1() = edge1_0 -> N2();\nN2() = edge2_0 -> N3();\nN3() = Good();\n#assert Business() reaches economicSuccess with pmin;\n",
+      "pcsp": "var successFlag = false;\n#define economicSuccess successFlag == true;\nGood() = success{successFlag = true;} -> Skip;\nBad() = no_success -> Skip;\nBusiness() = N0();\nN0() = edge0_0 -> N1();\nN1() = edge1_0 -> N2();\nN2() = edge2_0 -> N3();\nN3() = pcase { 1 : Good() 1 : Bad() };\n#assert Business() reaches economicSuccess with pmin;\n",
       "plan": {
         "op": "KEEP_BOOKING"
       },
@@ -167,6 +177,7 @@
     },
     {
       "assumptions": [
+        "credit_retention",
         "retention"
       ],
       "bounds": [
@@ -174,6 +185,7 @@
         -15000
       ],
       "closure": [
+        "credit_declined",
         "rejection"
       ],
       "compiler": "agentguard-1",
@@ -196,12 +208,14 @@
           "id": 0,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -219,12 +233,14 @@
           "id": 1,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -242,6 +258,7 @@
           "id": 2,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
@@ -250,6 +267,7 @@
               "rejection"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -261,6 +279,7 @@
           "id": 3,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
@@ -269,6 +288,7 @@
               "rejection"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -277,12 +297,12 @@
         }
       ],
       "interval": null,
-      "model_hash": "ee6cd420ab7a29917fed7de3e83349cfe5fe007c93d46f7f74ec9d114549357b",
+      "model_hash": "d76da333f725297aacf2ace449cc858eca4d15d47ce3cf0bcc0e67e7b9e23d1c",
       "operations": [
         "KEEP_BOOKING"
       ],
       "oracle": "-15000",
-      "pack_hash": "d46f27e05735a155fa06f87cdb1c0d30e6654f5e44cc4c97ade1634ea52b7155",
+      "pack_hash": "9df4ef4f4713fc89e4f7325d014f310405efdcee0ec3a5684811155111724590",
       "paths": [
         {
           "contribution": "-15000",
@@ -297,7 +317,7 @@
           "value": -15000
         }
       ],
-      "pcsp": "var successFlag = false;\n#define economicSuccess successFlag == true;\nGood() = success{successFlag = true;} -> Skip;\nBad() = no_success -> Skip;\nBusiness() = N0();\nN0() = edge0_0 -> N1();\nN1() = edge1_0 -> N2();\nN2() = edge2_0 -> N3();\nN3() = Good();\n#assert Business() reaches economicSuccess with pmin;\n",
+      "pcsp": "var successFlag = false;\n#define economicSuccess successFlag == true;\nGood() = success{successFlag = true;} -> Skip;\nBad() = no_success -> Skip;\nBusiness() = N0();\nN0() = edge0_0 -> N1();\nN1() = edge1_0 -> N2();\nN2() = edge2_0 -> N3();\nN3() = pcase { 1 : Good() 1 : Bad() };\n#assert Business() reaches economicSuccess with pmin;\n",
       "plan": {
         "op": "KEEP_BOOKING"
       },
@@ -351,12 +371,14 @@
           "id": 0,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -374,12 +396,14 @@
           "id": 1,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -391,12 +415,14 @@
           "id": 2,
           "state": {
             "amended": true,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -414,12 +440,14 @@
           "id": 3,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -437,12 +465,14 @@
           "id": 4,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -460,6 +490,7 @@
           "id": 5,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
@@ -468,6 +499,7 @@
               "failure"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -485,6 +517,7 @@
           "id": 6,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
@@ -493,6 +526,7 @@
               "failure"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -515,6 +549,7 @@
           "id": 7,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
@@ -524,6 +559,7 @@
               "dispute"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -541,6 +577,7 @@
           "id": 8,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
@@ -550,6 +587,7 @@
               "dispute"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -561,6 +599,7 @@
           "id": 9,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
@@ -570,6 +609,7 @@
               "dispute"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -587,6 +627,7 @@
           "id": 10,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
@@ -596,6 +637,7 @@
               "dispute"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -607,6 +649,7 @@
           "id": 11,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
@@ -616,6 +659,7 @@
               "dispute"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -624,12 +668,12 @@
         }
       ],
       "interval": null,
-      "model_hash": "a88f6ff0807551e72be9e8b2919ca048f9a73c73cdf8f600d7b42fd42a2b21d7",
+      "model_hash": "5209a180de867ed3c7082d53af156371fe0452620a61c9c60db1c4d64a187b96",
       "operations": [
         "GUARANTEE_AMENDMENT"
       ],
       "oracle": "-310100",
-      "pack_hash": "d46f27e05735a155fa06f87cdb1c0d30e6654f5e44cc4c97ade1634ea52b7155",
+      "pack_hash": "9df4ef4f4713fc89e4f7325d014f310405efdcee0ec3a5684811155111724590",
       "paths": [
         {
           "contribution": "-5600",
@@ -730,12 +774,14 @@
           "id": 0,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -753,12 +799,14 @@
           "id": 1,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -770,12 +818,14 @@
           "id": 2,
           "state": {
             "amended": true,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -793,12 +843,14 @@
           "id": 3,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -816,12 +868,14 @@
           "id": 4,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -839,6 +893,7 @@
           "id": 5,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
@@ -847,6 +902,7 @@
               "failure"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -864,6 +920,7 @@
           "id": 6,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
@@ -872,6 +929,7 @@
               "failure"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -894,6 +952,7 @@
           "id": 7,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
@@ -903,6 +962,7 @@
               "dispute"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -920,6 +980,7 @@
           "id": 8,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
@@ -929,6 +990,7 @@
               "dispute"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -940,6 +1002,7 @@
           "id": 9,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
@@ -949,6 +1012,7 @@
               "dispute"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -966,6 +1030,7 @@
           "id": 10,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
@@ -975,6 +1040,7 @@
               "dispute"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -986,6 +1052,7 @@
           "id": 11,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": true,
@@ -995,6 +1062,7 @@
               "dispute"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1003,12 +1071,12 @@
         }
       ],
       "interval": null,
-      "model_hash": "2b73a924b9557fb6c22d9ca700d1f533b4b6bec83e2fd6bd4f550de9327cdf42",
+      "model_hash": "e06185c6932e66e94589fe62157971fede79da58b7b1b5581583126a933a58be",
       "operations": [
         "GUARANTEE_AMENDMENT"
       ],
       "oracle": "-209400",
-      "pack_hash": "d46f27e05735a155fa06f87cdb1c0d30e6654f5e44cc4c97ade1634ea52b7155",
+      "pack_hash": "9df4ef4f4713fc89e4f7325d014f310405efdcee0ec3a5684811155111724590",
       "paths": [
         {
           "contribution": "-6400",
@@ -1070,6 +1138,7 @@
     },
     {
       "assumptions": [
+        "credit_retention",
         "fee",
         "normal_adverse",
         "retention"
@@ -1079,6 +1148,7 @@
         -8000
       ],
       "closure": [
+        "credit_declined",
         "rejection"
       ],
       "compiler": "agentguard-1",
@@ -1106,12 +1176,14 @@
           "id": 0,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1129,12 +1201,14 @@
           "id": 1,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1152,12 +1226,14 @@
           "id": 2,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "held",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1175,12 +1251,14 @@
           "id": 3,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1198,12 +1276,14 @@
           "id": 4,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "failed",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1215,12 +1295,14 @@
           "id": 5,
           "state": {
             "amended": true,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
             "hold": "held",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1238,12 +1320,14 @@
           "id": 6,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
             "hold": "failed",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1261,6 +1345,7 @@
           "id": 7,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
@@ -1269,6 +1354,7 @@
               "rejection"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1280,6 +1366,7 @@
           "id": 8,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
@@ -1288,6 +1375,7 @@
               "rejection"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1296,14 +1384,14 @@
         }
       ],
       "interval": null,
-      "model_hash": "590f5f9adb525e88c42715ba21c12cad133f97f176bfbde5a583fc71d26693a1",
+      "model_hash": "5656434a286cec6bf9535d1e05d0825f382c558688cd1b7599d6b3130a283d72",
       "operations": [
         "CONFIRM_AMENDMENT",
         "KEEP_BOOKING",
         "REQUEST_AMENDMENT"
       ],
       "oracle": "-10100",
-      "pack_hash": "d46f27e05735a155fa06f87cdb1c0d30e6654f5e44cc4c97ade1634ea52b7155",
+      "pack_hash": "9df4ef4f4713fc89e4f7325d014f310405efdcee0ec3a5684811155111724590",
       "paths": [
         {
           "contribution": "-5600",
@@ -1363,6 +1451,7 @@
     },
     {
       "assumptions": [
+        "credit_retention",
         "fee",
         "normal_available",
         "retention"
@@ -1372,6 +1461,7 @@
         -8000
       ],
       "closure": [
+        "credit_declined",
         "rejection"
       ],
       "compiler": "agentguard-1",
@@ -1399,12 +1489,14 @@
           "id": 0,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1422,12 +1514,14 @@
           "id": 1,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1445,12 +1539,14 @@
           "id": 2,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "held",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1468,12 +1564,14 @@
           "id": 3,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "none",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1491,12 +1589,14 @@
           "id": 4,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": false,
             "failed": false,
             "hold": "failed",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1508,12 +1608,14 @@
           "id": 5,
           "state": {
             "amended": true,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
             "hold": "held",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1531,12 +1633,14 @@
           "id": 6,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
             "hold": "failed",
             "occurred": [],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1554,6 +1658,7 @@
           "id": 7,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
@@ -1562,6 +1667,7 @@
               "rejection"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1573,6 +1679,7 @@
           "id": 8,
           "state": {
             "amended": false,
+            "credited": false,
             "declined": false,
             "done": true,
             "failed": false,
@@ -1581,6 +1688,7 @@
               "rejection"
             ],
             "seeking_amend": true,
+            "seeking_credit": false,
             "sold": false,
             "upgrade_attempted": false,
             "upgraded": false
@@ -1589,14 +1697,14 @@
         }
       ],
       "interval": null,
-      "model_hash": "29b188252d6d25ed5163edc7865a252da1a0e6c561a6d705ed53245240b0ecbf",
+      "model_hash": "efd0b4edb328dc4d0dd1bde6db31d027c7990e49d8dd300f5bad7ff7c64053b6",
       "operations": [
         "CONFIRM_AMENDMENT",
         "KEEP_BOOKING",
         "REQUEST_AMENDMENT"
       ],
       "oracle": "-9400",
-      "pack_hash": "d46f27e05735a155fa06f87cdb1c0d30e6654f5e44cc4c97ade1634ea52b7155",
+      "pack_hash": "9df4ef4f4713fc89e4f7325d014f310405efdcee0ec3a5684811155111724590",
       "paths": [
         {
           "contribution": "-6400",
@@ -1655,7 +1763,7 @@
       "strategy": "conditional"
     }
   ],
-  "pack_version": 1,
+  "pack_version": 2,
   "profile": {
     "floor_cents": null,
     "loss_multiplier": 1,
@@ -1702,10 +1810,10 @@
       "type": "amend"
     },
     "needs_clarification": false,
-    "request_id": "Rc0f3b6a33659b9e46ee5"
+    "request_id": "R8634b5e809dda963a289"
   },
   "reason": "PAT console is not configured; oracle preview only",
-  "request_id": "Rc0f3b6a33659b9e46ee5",
+  "request_id": "R8634b5e809dda963a289",
   "snapshot": {
     "as_of": "2026-11-20",
     "booking_id": "B001",

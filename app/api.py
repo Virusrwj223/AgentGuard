@@ -3,7 +3,7 @@ import os
 import time
 from pathlib import Path
 from fastapi import FastAPI, Depends, Header, HTTPException, Request
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from .contracts import Start,Inquiry,Proposal,Consent,Draft,Profile,Gap,Summary,CustomerResult
 from .compiler import Review,check,canonical,digest,QUERY
@@ -13,10 +13,12 @@ from .governance import Service,public
 from .examples import CASES,proposal
 
 def make_app(store=None,solver=None):
-    store=store or Store(os.environ.get("AG_DB",str(ROOT/"instance"/"agentguard.sqlite3")))
+    starting_demo = store is None
+    if starting_demo:
+        store=Store(os.environ.get("AG_DB",str(ROOT/"instance"/"agentguard.sqlite3")))
     solver=solver or Pat()
     svc=Service(store,solver)
-    app=FastAPI(title="AgentGuard",version="1.0")
+    app=FastAPI(title="AgentGuard Travel Desk",version="2.0")
     app.state.service=svc
     @app.exception_handler(Review)
     async def denied(request,exc):
@@ -29,7 +31,7 @@ def make_app(store=None,solver=None):
         response.headers["Cache-Control"]="no-store"
         response.headers["Referrer-Policy"]="no-referrer"
         response.headers["X-Content-Type-Options"]="nosniff"
-        response.headers["Content-Security-Policy"]="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; frame-ancestors 'none'"
+        response.headers["Content-Security-Policy"]="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://upload.wikimedia.org; frame-ancestors 'none'"
         return response
     def access(*roles):
         def identify(authorization:str=Header(default="")):
@@ -43,7 +45,7 @@ def make_app(store=None,solver=None):
     @app.get("/")
     def home():return FileResponse(ROOT/"frontend"/"index.html")
     @app.get("/founder")
-    def founder():return FileResponse(ROOT/"frontend"/"founder.html")
+    def founder():return RedirectResponse("/",status_code=303)
     @app.get("/health")
     def health():return {"service":"AgentGuard","solver":"PAT" if solver.ready else "Exact preview","can_authorize":solver.ready}
     @app.post("/api/sessions")
@@ -53,10 +55,10 @@ def make_app(store=None,solver=None):
         with store.tx(False) as db:
             b=booking(db,who[1])
             row=db.execute("SELECT id,message FROM requests WHERE sid=? ORDER BY rowid DESC LIMIT 1",(who[1],)).fetchone()
-        return {"booking":{k:b[k] for k in ("booking_id","package","kind","departure","currency","slots","version","upgraded","upgrade_prices_cents")},"request":dict(row) if row else None}
+        return {"booking":{k:b[k] for k in ("booking_id","package","kind","departure","currency","slots","version","upgraded","upgrade_prices_cents","origin","destination","return_date","cabin","travellers","lead_name","seat_preference","airline_preference","paid_cents") if k in b},"request":dict(row) if row else None}
     @app.get("/api/catalog")
     def catalog(who=access("sales","founder","knowledge","risk")):
-        return {"schema":Proposal.model_json_schema(),"capabilities":["amend","upgrade","amend_upgrade","sale"],"currency":"SGD","horizon_days":90,"clarify":"Ask for exact units, dates and consent limits when ambiguous."}
+        return {"schema":Proposal.model_json_schema(),"capabilities":["itinerary","seat_preference","amend","upgrade","amend_upgrade","sale","credit"],"currency":"SGD","horizon_days":90,"clarify":"Ask for exact units, dates and consent limits when ambiguous."}
     @app.post("/api/requests")
     def inquiry(body:Inquiry,who=access("customer")):
         return {"request_id":svc.inquiry(who[1],body.message)}
@@ -82,8 +84,10 @@ def make_app(store=None,solver=None):
             grant=db.execute("SELECT * FROM grants WHERE decision=?",(d["decision_id"],)).fetchone()
             if grant and grant["used"]:
                 execution=db.execute("SELECT data FROM events WHERE decision=? AND kind='mock transaction' ORDER BY id DESC LIMIT 1",(d["decision_id"],)).fetchone()
-                response["execution"]="COMPLETED"
-                response["message"]=json.loads(execution[0])["message"]
+                if execution:
+                    response.update(execution="COMPLETED",message=json.loads(execution[0])["message"])
+                else:
+                    response.update(execution="DECLINED",message="You declined this offer. Your booking keeps its current terms.")
             elif grant and grant["expires"]>time.time():
                 bound=json.loads(grant["details"])
                 if bound["snapshot"]==digest(booking(db,who[1])) and bound["pack"]==pack(db)["version"]:return response
@@ -176,5 +180,9 @@ def make_app(store=None,solver=None):
             db.execute("INSERT INTO packs VALUES(?,?)",(k["version"],canonical(k)))
             event(db,"profile","founder","owner profile changed",{"version":k["version"],"profile":k["profile"]})
             return k["profile"]
+    from .web_api import install_web
+    install_web(app,svc,access)
+    if starting_demo:
+        store.reset_records()
     app.mount("/static",StaticFiles(directory=ROOT/"frontend"),name="static")
     return app

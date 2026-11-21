@@ -4,11 +4,26 @@ import os
 import secrets
 import sqlite3
 from contextlib import contextmanager,closing
-from datetime import datetime,timezone
+from datetime import datetime,timezone,date
 from pathlib import Path
 from .compiler import canonical, check
+from .travel_policy import with_itinerary_policy, with_credit_policy, with_advance_policy, with_cumulative_credits, with_seat_preference_policy
+from .trip_intake import booking_context,inventory_slots
 
 ROOT=Path(__file__).resolve().parents[1]
+PROTECT_EVENTS = "CREATE TRIGGER no_delete_events BEFORE DELETE ON events BEGIN SELECT RAISE(ABORT,'immutable event'); END"
+
+
+@contextmanager
+def allow_event_deletion(db):
+    # Call inside a write transaction so the trigger change and erasure commit together.
+    db.execute("DROP TRIGGER IF EXISTS no_delete_events")
+    try:
+        yield
+    finally:
+        db.execute(PROTECT_EVENTS)
+
+
 def seed(name):
     return json.loads((ROOT/"domain_packs"/"travel"/name).read_text(encoding="utf-8"))
 def now():
@@ -36,7 +51,24 @@ class Store:
             CREATE TRIGGER IF NOT EXISTS no_delete_packs BEFORE DELETE ON packs BEGIN SELECT RAISE(ABORT,'immutable pack'); END;
             """)
             db.execute("INSERT OR IGNORE INTO packs VALUES(1,?)",(canonical(seed("pack.json")),))
-            for role in ("founder","knowledge","risk","audit"):
+            current = pack(db)
+            updated = with_itinerary_policy(with_seat_preference_policy(with_cumulative_credits(with_advance_policy(with_credit_policy(current)))))
+            if updated is not current:
+                updated["version"] = current["version"] + 1
+                db.execute("INSERT INTO packs VALUES(?,?)", (updated["version"], canonical(updated)))
+            # Reclassify bookings created before advance assumptions were published.
+            for row in db.execute("SELECT sid,booking FROM accounts").fetchall():
+                booked = json.loads(row["booking"])
+                if booked.get("self_service") and booked.get("kind") == "booked":
+                    lead = (date.fromisoformat(booked["departure"]) - date.fromisoformat(booked["as_of"])).days
+                    context = booking_context(lead)
+                    slots = inventory_slots(booked["departure"])
+                    if context != booked["context"] or slots != booked["slots"]:
+                        booked["context"] = context
+                        booked["slots"] = slots
+                        booked["version"] += 1
+                        db.execute("UPDATE accounts SET booking=? WHERE sid=?", (canonical(booked), row["sid"]))
+            for role in ("founder","knowledge","risk","audit","web_worker"):
                 db.execute("INSERT OR IGNORE INTO roles VALUES(?,?)",(role,secrets.token_urlsafe(32)))
         if os.name!="nt":
             os.chmod(self.path,0o600)
@@ -44,6 +76,7 @@ class Store:
     def tx(self,write=True):
         with closing(sqlite3.connect(self.path,timeout=8,isolation_level=None)) as db:
             db.row_factory=sqlite3.Row
+            db.execute("PRAGMA secure_delete=ON")
             db.execute("BEGIN IMMEDIATE" if write else "BEGIN")
             try:
                 yield db
@@ -54,6 +87,15 @@ class Store:
     def role_key(self,role):
         with self.tx(False) as db:
             return db.execute("SELECT token FROM roles WHERE role=?",(role,)).fetchone()[0]
+    def reset_records(self):
+        """Clear prior demo activity while keeping published policies and connector keys."""
+        with self.tx() as db, allow_event_deletion(db):
+            for table in (
+                "web_sales", "web_turns", "web_messages", "web_trips", "web_chats",
+                "grants", "decisions", "requests", "accounts", "events", "drafts",
+            ):
+                db.execute(f"DELETE FROM {table}")
+
     def session(self,fixture):
         sid,customer,sales=uid("S"),secrets.token_urlsafe(32),secrets.token_urlsafe(32)
         with self.tx() as db:

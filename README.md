@@ -1,132 +1,142 @@
-# AgentGuard
+# Northline Travel · AgentGuard
 
-A local travel-negotiation governance prototype for the QwenWork × Hashmeta AI challenge. A sales workflow proposes strategies. A deterministic compiler calculates their consequences under a versioned synthetic travel pack, emits PCSP, and submits each model to a configured PAT console. A separate executor applies exact authorized terms to a simulated booking.
+A local travel-booking demo using QwenWork. The traveller plans an itinerary, confirms a demo reservation, negotiates and asks for the explanation within the selected booking's conversation. The website validates cities and looks up fare estimates. A local simulated price keeps demo bookings available when fare sources are unavailable. No airline tickets are issued.
 
-## Start the project
+## Free internet search (default)
 
-Use Python 3.11 or 3.12. From the directory containing this README, on Windows PowerShell:
+No account or paid search key is required. The website searches Open-Meteo/GeoNames for real cities, the OurAirports airport-code dataset for airports, Wikipedia for destination photos, and DuckDuckGo for advertised fares. The Singapore–New York and Singapore–Montréal routes also link to published airline service and check airlines’ own fare tables when general search yields no usable price. In **.env**, keep:
+
+```dotenv
+AG_TRAVEL_MODE=web
+```
+
+“From Singapore, destination Qubec” is accepted as a route description. A fuzzy city match asks you to confirm a suggested spelling, rather than silently changing the destination. Reply with the corrected city name, such as “Québec”.
+
+“Book another trip” starts with empty fields and asks where you are leaving from. A reply such as “Singapore” answers that question. “I am leaving from Singapore, going to New York City” fills both cities, and “two weeks from today I leave” uses the server’s local calendar for departure. Country and region qualifiers are retained: “Destination: Montreal, Canada” selects the Canadian city. For unqualified names, a returned capital city or overwhelmingly larger city can resolve minor namesakes; similarly sized alternatives still require a country. You can reply “Montreal, Quebec, Canada” to clarify.
+
+Advertised fare estimates show the source link, a per-adult SGD price and a group estimate. Published airline service describes routes the airline sells. Check availability for your dates through **Compare current fares**. If there is no usable advertised price, Northline uses a clearly labelled **Simulated demo fare** based on distance, cabin and adult count. You can confirm a demo reservation with either price. The quote is held in the app for 30 minutes. Seats remain unassigned. An internet connection helps with place validation, advertised prices and photos.
+
+Place data: https://open-meteo.com/en/docs/geocoding-api (GeoNames), airport records: https://github.com/datasets/airport-codes (OurAirports). Record sources are retained with each booking.
+
+## Optional Google Flights estimates through SerpApi
+
+SerpApi’s [free plan](https://serpapi.com/pricing) includes 250 searches per month. With a key, the website first requests an SGD round-trip estimate for the selected route, dates and cabin. The API searches for one adult, and Northline multiplies that price by the party size. Airline names from this lookup refer to the outbound leg. If the API cannot find a usable result, Northline continues with the public fare sources and local demo price. See the [Google Flights API parameters](https://serpapi.com/google-flights-api).
+
+To enable it, add your key to **.env** next to **run.py** and restart the launcher. The website server calls the API and QwenWork receives no key. Keep your existing PAT and Qwen settings.
+
+```dotenv
+AG_TRAVEL_MODE=web
+SERPAPI_API_KEY=your_serpapi_key
+```
+
+If an older `.env` selects `AG_TRAVEL_MODE=amadeus`, switch to `web` for this demo. Amadeus closed its [Self-Service portal](https://developers.amadeus.com/api-catalog) in 2026. The amendment model uses synthetic supplier fees and availability, visible in its assumptions.
+
+The validated destination photo appears on the itinerary and in the booking confirmation when a matching photo is found. Its source and licence appear with the image. The New York City demo uses a credited Lower Manhattan photo from Wikimedia Commons. Countries or regions require a specific city or airport; ambiguous search results require a specific choice or IATA code.
+
+## Start on the Windows computer that already runs PAT
+
+1. Right-click the new ZIP in File Explorer and select **Extract All**. Open the inner **agentguard** folder. You should see **start.cmd** and **run.py** together. Keep this folder separate from your previous project.
+2. Copy your entire working **C:\codingProjects\patato\pat_lib** folder into this **agentguard** folder. Check that **agentguard\pat_lib\PAT3.Console.exe** exists, with **Modules** and the other supplied files alongside it. Alternatively, copy your working **.env** beside **run.py** if its PAT path already points to the full, working installation.
+3. Stop the old demo server if it is using port 8765. Double-click **start.cmd** in the new folder. The first launch creates the Python environment and installs the dependencies. Use Python 3.11 or 3.12 if you are setting up another computer. Leave the launcher window open during the demo.
+4. The launcher opens **http://127.0.0.1:8765/**. Look for **PAT console calibrated** in the launcher window to confirm that it can issue negotiated offers. The copied installation is fingerprinted and calibrated automatically on Windows. Its settings are saved beside the demo database. Future starts use the same launcher.
+
+Each server launch clears the demo’s previous bookings, conversations, requests, offers, decisions, audit events and policy drafts from **instance/agentguard.sqlite3** (or the database selected by **AG_DB**). Trips created during a run remain available when you reload the page. Published policy versions, connector credentials and PAT settings carry across restarts. Commands that print connector configuration or keys keep existing demo records.
+
+### If PAT is installed somewhere else
+
+Once the environment exists, open the folder containing **run.py** in File Explorer. Type **powershell** into the address bar and press Enter. These commands register the installation you already use and run the acceptance checks.
 
 ```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe run.py
+$p = 'C:\codingProjects\patato\pat_lib\PAT3.Console.exe'
+$v = (Get-Item -LiteralPath $p).VersionInfo.FileVersion
+.\.venv\Scripts\python.exe run.py --configure-pat $p $v
+.\.venv\Scripts\python.exe integrations\check_pat.py
 ```
 
-On macOS or Linux:
+The check prints one result per model and records the evidence in **instance/pat-acceptance.json**. Restart the launcher after changing settings. If a previous PowerShell session or copied **.env** still sets **AG_PAT_EXE**, **AG_PAT_VERSION** or **AG_PAT_SHA256**, it takes precedence over the saved installation. Use the settings from your successful calibration. A missing module message calls for the full working PAT distribution. The folder named **.venv** is for Python dependencies.
 
-```sh
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install -r requirements.txt
-python run.py
+If you are updating a previous extracted Travel Desk, close its launcher and extract this release into a new folder. Copy your calibrated **pat_lib** and any existing **.env** into that folder. Copy **instance** too if you want to carry over published policy versions, connector credentials and PAT settings. The first launch clears any previous demo activity in the copied database.
+
+## Try a booking and a negotiation
+
+1. Enter “Book a flight from Singapore to Toronto for two adults in economy, 12–16 December 2026, under Raj. Can I get SGD 10 off?” Use future dates. You can also start with a destination and answer one question at a time. Cabin class is required. Names following “under” are traveller names. You can say “window seat”, “aisle seat” or “sit together” to record a preference. Demo reservations leave seats unassigned.
+2. The itinerary shows validated locations and an advertised estimate or simulated demo fare. Any discount request is saved until confirmation. Edits to the itinerary invalidate the old quote.
+3. Choose **Confirm booking**. The agency writes a reservation with its own **NT-** reference. The negotiation agent picks up the saved request automatically. The current price continues to show what the traveller has booked.
+4. For an existing booking, try “Change my cabin to business and depart one day later”, “Change my seat preference to aisle”, a date change, or a credit request. Ask **Explain this decision** or “Show the assumptions”. **Accept offer** applies the exact verified terms. Each additional credit request is evaluated with all previously accepted credits included in its cost. The model may accept, counteroffer or reject; there is no limit on the number of negotiations. Preview mode cannot issue an offer.
+5. Try “Move my trip 14 days later”, “Move my trip 14 days earlier” (if the new date is in the future), “Book another trip to Lombok” or “List my trips”. Say “Open NT-…” with a reference from your list to return to a trip. Reloading the same browser restores its conversation. On a small screen, tap **Your itinerary** beneath the chat.
+
+Use the booking selector in the right panel to switch the itinerary and its chat together. The plus button starts another itinerary. The trash button permanently removes that selected demo booking, its requests, decisions, grants, audit events and messages from the active database after confirmation. It does not delete other bookings. Finish an active review before deletion. Legacy multi-booking transcripts cannot be separated reliably and are not shown as context for a selected booking; deleting a legacy booking also clears unassigned legacy messages.
+
+## Use QwenWork with Northline
+
+The website is usable as soon as it opens. Its built-in planner runs locally. To have actual QwenWork handle intake and propose the sales terms from behind the website, connect the worker once per project setup and start a worker conversation for the demo.
+
+1. Keep **start.cmd** running. If QwenWork Desktop is already installed, open it. On a new computer, select **Windows** on the official download page, run the installer, open the app and sign in. [QwenWork download](https://qwenwork.ai/download)
+2. Double-click **connect-qwenwork.cmd** in the new **agentguard** folder. It installs the MCP connector dependency, copies the website-worker instructions into your QwenWork skills directory, and places the connector JSON on your clipboard. The JSON contains a private, local planning credential.
+3. In QwenWork Desktop, open **Extensions → Connectors → + Add → Paste JSON configuration**. Paste the clipboard with **Ctrl+V**, select **Import**, then enable **northline-web**. It has three tools for health, picking up a request and returning a typed answer. Recent versions also expose custom MCP setup under the Connectors page. [QwenWork connectors](https://docs.qwenwork.ai/desktop/connectors)
+4. In a QwenWork conversation, send “Use northline-web-worker to serve the travel desk. Keep listening for website tasks and return each result through the northline-web connector.” Allow the connector’s planning tools if your edition prompts. Keep this session running in the background. [QwenWork skills](https://docs.qwenwork.ai/desktop/skills)
+5. Return to the **website**. Straightforward route corrections and quote refreshes are handled there. The worker can serve other intake and negotiation requests through the same connection, including for new bookings. To see which planner submitted a decision, ask “Explain this decision”. A worker submission appears as **QwenWork background worker**. An idle result means the worker is waiting for a website task. If the background conversation stops listening, the website can use an available hosted planner or its built-in planner.
+
+### Run Qwen with Desktop fully closed
+
+If you already have an Alibaba Cloud Model Studio workspace and a key for its region, copy **.env.example** to **.env** beside **run.py** or edit your existing **.env**. Set the following fields using your workspace endpoint and restart **start.cmd**. The server calls Qwen directly. This route uses your Model Studio API access and billing. The explanation labels an accepted proposal from this route **Qwen Model Studio**. [Official compatible API and regional endpoints](https://www.alibabacloud.com/help/en/model-studio/compatibility-of-openai-with-dashscope)
+
+```dotenv
+AG_QWEN_BASE_URL=https://YOUR_WORKSPACE_ID.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
+DASHSCOPE_API_KEY=YOUR_MODEL_STUDIO_KEY
+AG_QWEN_MODEL=qwen-plus
 ```
 
-Open **http://127.0.0.1:8765/**. Select *Change the date at no extra cost* and click **Run sample**. The customer sees **NEEDS_REVIEW** on a machine without a calibrated PAT console. Open **http://127.0.0.1:8765/founder**. Run `python run.py --key founder` with the same environment in a second terminal and paste the private key into the founder console. Select the decision to inspect the scenario comparison, probabilities, PCSP, graph, solver evidence and events. The local narrated walkthrough is **demo/AgentGuard-walkthrough.mp4**.
+## What the code runs
 
-The default database is `instance/agentguard.sqlite3`. Set `AG_DB` before launch to use a different local database. Each customer session gets its own copy of a synthetic booking. **Open booking** starts a fresh session. The server binds to loopback. Private financial data and approval credentials belong on the agency machine.
+| Part | Behaviour |
+| --- | --- |
+| Browser and chat API | One same-origin chat, contextual prompts and a live itinerary. An HttpOnly cookie scopes travellers to their own records and explanations. |
+| Booking intake | Collects origin, destination, future departure and return, party size and lead name. Validates dates and calculates a standard quote. A successful confirmation creates a booking and releases deferred sales requests in the same database transaction. |
+| Sales planner | Builds typed candidate plans for booked-trip credits, departures up to 90 days earlier or later, room upgrades, seat-preference edits and supported combinations. A local deterministic planner is always available. The optional Qwen services produce structured inputs. |
+| Verification and execution | The compiler and versioned travel policy build complete PCSP models for the baseline and candidate strategies. PAT verifies the models. The service compares the worst scenario against the owner's minimum improvement and applicable floor. A time-limited grant binds the decision to the booking, policy and terms. Only the traveller’s subsequent acceptance can change the simulated booking. |
+| Conversation and audit | SQLite stores the conversation, reservation, pending requests, decision and execution events. A browser reconnects to unfinished work. The chat explanation uses the recorded comparison and any execution result. Agency-only APIs from the previous release retain their role restrictions. |
 
-## What has been exercised
+The credit policy evaluates cumulative credits against a synthetic SGD 25 retained contribution per booking. This is an explicit model assumption, not a negotiation-count restriction. Further requests are accepted when their cumulative cost meets the utility criteria. The planner proposes the requested credit and, when applicable, a smaller amount based on remaining modelled contribution; PAT must still verify either proposal. Updates are recorded as a new policy version. The assumptions are in **app/travel_policy.py** and **domain_packs/travel/**.
 
-| Component | Delivery and evidence |
-|---|---|
-| Compiler, scenario comparison, SQLite authority, customer and founder app | Implemented. Numerical, API and enforcement tests pass. See demo/validation.md. |
-| QwenWork integration | Four installable role Skills, typed MCP stdio tools and a JSON transfer client. An actual MCP client performed a local handshake, read a booking and submitted a proposal. A signed-in QwenWork session still needs to demonstrate these steps. |
-| PAT PCSP | Deterministic generated models, subprocess adapter, pinning, two startup calibration jobs, precision checks and a real-console acceptance command. The supplied environment had no PAT binary. No real PAT result is bundled. |
-| Hashmeta AI CMS | CMS page copy, page structure, publication instructions and a reference-page builder. No published site URL is claimed. |
-| Walkthrough | Three-minute narrated walkthrough of actual exact-graph output. It can be used for rehearsal. The competition recording still needs live platform footage. |
+For bookings more than 90 days before departure, policy AG-03 supplies separately labelled synthetic reference and adverse availability estimates. The figures extrapolate the 8–90 day demo estimates; they are not supplier data. “Show the assumptions” discloses the source and limitation. Existing far-ahead bookings are reclassified when the app starts, preserving prior decision records. Request a fresh decision after updating; an earlier review result cannot become an offer automatically.
 
-## Travel example
+When a very large, rare liability makes PAT's single probability too coarse to recover value within five hundredths of a cent, the verifier separately checks each non-dominant terminal outcome probability. It compares those results against the independent exact graph calculation and retains the original run plus probe models in the decision audit. Failed or imprecise probes still require review.
 
-All values are incremental SGD with an identity utility profile. The common starting point is an existing reservation. The lower figure for each plan across the two scenarios determines its robust score.
+Flights can be revised in a single request covering the route, either travel date, cabin, party size, lead name and preferences. For itinerary revisions that affect inventory, the server obtains a revised gross fare. The policy models the gross fare difference as a matching supplier cost difference. A successful simulated hold also incurs the amendment fee. An unavailable hold preserves the whole original booking. Accepted credits carry forward up to the revised gross fare.
 
-| Strategy | Reference (80% hold) | Adverse (70% hold) |
-|---|---:|---:|
-| Decline change and keep booking | −150 | −150 |
-| Guarantee immediately | −2,094 | −3,101 |
-| Request binding hold, then confirm or keep | −94 | −101 |
+Scores for changes measure incremental agency utility. Under the supplied peak adverse scenario a hold succeeds with probability 0.55. Keeping the original booking costs SGD 150 in assumed lost repeat business. Waiting scores −111.50, an improvement of SGD 38.50. Guaranteeing scores −4,611.50 because the failed-hold branch includes a 1% chance of a synthetic SGD 1 million claim. These figures depend on the selected policy.
 
-Conditional service improves on rejection by SGD 56 in the reference case and SGD 49 across the enumerated scenarios. Immediate failure incurs recovery; the synthetic claim occurs on 1% of those failures. The combined reference claim probability is 0.2%. Each incremental value is counted once. No tier of expected utility overrides a missing permission, an unsupported scenario or a stale authorization.
+Policy AG-05 models a post-confirmation seat-preference edit as a local record update with SGD 0 of supplier or payment costs. PAT compares it with keeping the booked preference. Acceptance applies the exact preference verified by PAT. Flight assignments stay with the airline. A successful date amendment marks the original fare's carrier and seat information stale.
 
-Other samples cover a new-sale discount (SGD 120 list, SGD 90 cost, SGD 10 discount), an upgrade requiring consent, a compound amend-and-upgrade plan, ambiguity and loyalty conversion. B003 uses a peak context and a mock unavailable response. Each booking has specific dated inventory, a simulated business clock and a supplier version. The fixed mock supplier response is a reproducible observation for execution; the scenario probabilities describe uncertainty before the response. A new date requires refreshed inventory for subsequent amendments.
+### Code map
 
-## Use PAT on a supported host
+| Module | Responsibility |
+| --- | --- |
+| `app/chat.py` and `app/chat_repository.py` | Route chat commands, persist each turn and project the selected itinerary. |
+| `app/booking_intake.py` and `app/trip_intake.py` | Interpret a turn using its pending question, validate the merged draft and format booking replies. |
+| `app/language_models.py` | Pass typed planning jobs to QwenWork or hosted Qwen. |
+| `app/travel_search.py`, `app/web_travel_search.py` and `app/flight_details.py` | Resolve places, retrieve fares and seat evidence, and attach credited photos. |
+| `app/fare_estimates.py` | Read Google Flights prices through SerpApi and calculate local demo fares. |
+| `app/sales_desk.py`, `app/compiler.py`, `app/pat.py` and `app/governance.py` | Build typed change proposals, compile and verify them, and apply matching consent. |
 
-Install a compatible PAT 3.x distribution with PCSP and its dependencies. Keep the console, module hierarchy and DLLs installed together. The application runs PAT on the same machine as the backend. Windows support in the project requires the `pywin32` dependency. An absolute `AG_PAT_RUNTIME` may be supplied on a compatible host with a tested managed runtime. No proprietary console or module is redistributed.
+The intake refactor follows the CS2103/T textbook's guidance on readable names, cohesive functions and reducing duplicate logic. The chat interprets a turn once, and both travel providers use the same draft validation and fare invalidation flow. [CS2103/T textbook](https://nus-cs2103-ay2627-s1.github.io/website/se-book-adapted/index.html)
 
-Example PowerShell, after replacing the file path with your installation:
+## Run the checks
+
+From the directory containing **run.py**, after the Windows launcher has installed dependencies, use PowerShell.
 
 ```powershell
-$env:AG_PAT_EXE = (Resolve-Path 'C:\PAT\PAT3.Console.exe').Path
-$env:AG_PAT_SHA256 = (Get-FileHash $env:AG_PAT_EXE -Algorithm SHA256).Hash.ToLowerInvariant()
-$env:AG_PAT_VERSION = (Get-Item $env:AG_PAT_EXE).VersionInfo.FileVersion
-.\.venv\Scripts\python.exe integrations/check_pat.py
-.\.venv\Scripts\python.exe run.py
+.\.venv\Scripts\python.exe -m unittest discover -v
+.\.venv\Scripts\python.exe -m pip install -r integrations\requirements-mcp.txt
+.\.venv\Scripts\python.exe integrations\smoke_mcp.py
+.\.venv\Scripts\python.exe integrations\check_pat.py
 ```
 
-If the distribution has empty file-version metadata, set the operator-confirmed distribution version explicitly. Save the version and fingerprint from the validated installation. The candidate CLI invocation is `PAT3.Console.exe -pcsp -engine 0 -behavior 0 model.pcsp result.txt`. Confirm it with your distribution. The runner will accept a single assertion-specific minimum-probability verdict only. Missing output, syntax differences, low precision, an incompatible runtime or a failed job blocks approval. The runner uses a private directory, two concurrent slots, a per-process memory cap and an eight-second wall timeout. On Windows, incompatible job-object restrictions cause a tool error. Preserve the raw result when adapting to a newly observed PAT output format.
+The first command exercises intake, persistence, consent, deferred negotiation, authorization and compiler regressions. The second and third exercise both MCP paths using a disposable database. The final command runs **your installed PAT** and includes a seat-preference change through the real verifier and consent flow. The repository includes sample PCSP and a recorded preview in **demo/generated/**. Run **python demo/export.py** to regenerate those examples and the shared proposal schema.
 
-The acceptance command checks two startup probabilities, four arithmetic fixtures and all six flagship models on the actual binary. It emits `instance/pat-acceptance.json` after calibration, including stdout, result text, version, model and cross-checks. Verify all checks before recording a PAT demo. Five printed decimal places may be insufficient for the rare-loss model. Where the installed console supports it, configure greater precision and rerun acceptance. No tolerance is relaxed to obtain authorization.
+On macOS or Linux, create a virtual environment, install **requirements.txt** and run **python run.py**. The chat and standard bookings work without solver configuration. The PAT check requires a compatible installation and, where applicable, an **AG_PAT_RUNTIME** executable. The demo binds to your own computer's loopback address and does not contact travel suppliers or process payments.
 
-### Query, bounds and decision rule
+## Design reference
 
-Every production model contains exactly:
-
-```c
-#assert Business() reaches economicSuccess with pmin;
-```
-
-For terminal utility X, lower bound L and upper bound H, the synthetic terminal success probability is (X−L)/(H−L). The decoder returns L+(H−L)p. Equal bounds use a deterministic success branch. The compiler uses the actual reachable bounds of each individual model to limit rounding amplification. Different models' probabilities cannot be compared directly. Decoded utilities share units. The graph fixes agent choices and enumerates finite stochastic branches only.
-
-The independent exact-rational dynamic program evaluates business edges directly. A separate forward traversal supplies path probabilities, monetary values and utility contributions. The adapter compares PAT to the exact probability and decoded utility for this graph. It permits at most 0.00001 probability discrepancy and 0.05 utility-cent discrepancy; its conservative comparison uses the interval enclosing both decoded and exact scores. This is an a posteriori comparison against a known reference for the graph. It does not certify arbitrary PAT convergence. Missing or uncertain jobs prevent authorization across the entire decision.
-
-For each strategy take the worst scenario endpoint. Require the candidate's lower endpoint to clear the baseline upper endpoint plus the owner's minimum gain and optional floor. Prefer satisfying the request to asking for separate consent, then rank within that class. Incomparable numerical intervals abstain. Exact ties within a class use the lexicographically first strategy ID. The loss multiplier acts on terminal losses before expectation.
-
-## Connect genuine QwenWork workflows
-
-1. Install `integrations/requirements-mcp.txt` in the same Python environment. Keep the backend running.
-2. Install the four folders under `agents/skills/` through QwenWork Desktop's Skills screen or place them under the account's `~/.qwenwork/skills/` directory. Use separate role sessions.
-3. In the customer desk enter the real negotiation text and choose **Prepare QwenWork handoff**. This creates a session-bound request. Copy the sales credential from the private handoff into the connector's environment. Keep the customer channel and founder key away from the agent.
-4. Configure a custom stdio MCP service with the absolute Python executable and the absolute path to `integrations/mcp_server.py`. The example configuration is in `integrations/mcp.example.json`. Set `AG_ROLE=sales`, `AG_ROLE_KEY` and `AG_URL` in the connector host. Reconfigure the sales key when starting a fresh synthetic booking. Give this role only its sales connector.
-5. Invoke **agentguard-sales** in QwenWork. Ask it to retrieve the booking, interpret the customer message, propose alternatives and call `evaluate_strategies`. Verify the real tool call and request ID. Use **Check response** in the customer desk. Only the desk can consent and call the mock executor. The QwenWork chat is an internal drafting interface.
-6. Configure **knowledge**, **risk** and **audit** connectors with matching `AG_ROLE` and the corresponding secret returned by `python run.py --key knowledge`, `--key risk` or `--key audit`. The connector refuses founder/customer roles. Use `demo/supplier-note.txt` for knowledge onboarding. Review pending facts in the founder console. The risk role submits gaps; the audit role checks event-linked exact fields and falls back to the deterministic record.
-7. Record the actual QwenWork session, connector inventory, submitted plan and matching backend decision ID for the submission. Redact every credential.
-
-**Manual QwenWork transfer.** If your edition cannot connect stdio, give the actual QwenWork session the request, booking context, and `shared/proposal.schema.json`. Have it export a JSON plan file, then use `python integrations/handoff.py evaluate plan.json` from the backend environment. The CLI prompts for a scoped key or reads `AG_ROLE_KEY`. Use the same helper with `context`, `catalog`, `draft record.json`, `audit DECISION_ID` or `response`. Explicitly label this as a manual transfer. The sample replay is independent of QwenWork.
-
-Platform references: [QwenWork Skills](https://docs.qwenwork.ai/desktop/skills) · [QwenWork connectors](https://docs.qwenwork.ai/desktop/connectors) · [PAT PCSP manual](https://pat.comp.nus.edu.sg/resources/OnlineHelp/htm/scr/3.3%20PCSP%20Module/3.3%20Probability%20CSP%20Module.htm) · [Hashmeta AI CMS](https://hashmeta.ai/platform/ai-cms).
-
-## Knowledge, authorization and audit
-
-The travel pack contains approved numerical records, bounded contexts, exclusions, templates and an explicit conditional event graph. The pack interpreter accepts registered numeric references, typed operation arguments, additive effects and conditional branches. A cycle, missing required dependency, unapproved assumption, incomplete family coverage or invalid integer fails closed. New operator semantics and new contextual dimensions require engineering review. The founder can edit existing parameter drafts, dismiss or publish them, update the utility profile, and suspend an operation by approving a material gap. Publications produce immutable pack versions in SQLite. The deterministic evidence view preserves the pack used by each historical decision.
-
-A server-stored five-minute grant binds the session, decision, current request, exact terms, model hashes, booking/supplier versions and active knowledge/profile versions. The customer explicitly accepts the displayed terms digest. The transaction validates the grant, reads the simulated supplier observation, performs a bounded state update, consumes the grant and appends execution evidence atomically. A conditional amendment that gets no hold keeps the original date. The demo models prepaid/settled transactions and bounded 90-day contribution. It performs no external communications, card charging or supplier updates.
-
-The journal records structured events and a digest of the request text. The session stores the original request for planning. Local SQLite access is the trust boundary. Application-level append-only logging provides traceability. For private review, see `/docs` for endpoint schemas and `/api/audits/{decision_id}` for the manifest, event list, solver traces and XAI paths. Public/customer responses omit supplier margins and loss assumptions.
-
-## Test and reproduce
-
-```sh
-python -m unittest discover -v
-python demo/export.py
-python -m pip install -r integrations/requirements-mcp.txt
-python integrations/smoke_mcp.py
-```
-
-The first command checks numerical reduction, correlated losses, conditional plans, review/publish, privileges, stale/altered tokens, concurrent replay, solver failures and labelled cases. Some tests deliberately inject independent test-only solvers. The application exposes no solver substitution endpoint. The POSIX subprocess fixture is skipped on Windows; run the real Windows console acceptance command there. The MCP smoke command uses a disposable backend and a real SDK client. `demo/export.py` regenerates the flagship preview audit and the six model files.
-
-## Directory map
-
-| Location | Responsibility |
-|---|---|
-| app/contracts.py, shared/ | Strict plan grammar, validation and exported schemas |
-| app/compiler.py, domain_packs/travel/ | Plan interpretation, closure, exact paths and PCSP |
-| app/pat.py, app/limited_run.py | Isolated solver, calibration, decoding and precision |
-| app/governance.py, app/store.py | Scoring, atomic execution, snapshots and audit |
-| app/api.py, frontend/ | Customer desk, founder console, access-scoped HTTP API |
-| agents/skills/, integrations/ | QwenWork skills, scoped MCP, JSON handoff and acceptance checks |
-| demo/, tests/ | Labelled requests, generated models, audit, walkthrough, regression evidence |
-| hashmeta/ | Public CMS copy, reference layout and publication steps |
-
-## Submission handoff
-
-Follow `hashmeta/CMS.md` to create and publish the public site inside Hashmeta AI CMS. The optional reference-page generator accepts the team's actual HTTPS demo and contact destinations. Build and publish in the CMS, test its public CTA and record the URL. Capture the real PAT and QwenWork runs and replace the corresponding portions of the local walkthrough before submitting it as platform evidence. All financial and supplier assumptions are synthetic. Formal results apply to the finite compiled models and specified conditions.
+The desktop page gives roughly two-thirds of the width to the conversation. Its blue accents, destination photography and concise booking summary draw on Traveloka Singapore. Northline uses its own wordmark, copy and illustrative cover. [Traveloka Singapore](https://www.traveloka.com/en-sg)

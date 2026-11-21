@@ -20,9 +20,13 @@
               "CONFIRM_AMENDMENT": "#/$defs/Confirm",
               "GUARANTEE_AMENDMENT": "#/$defs/Request",
               "IF": "#/$defs/Conditional",
+              "ISSUE_TRIP_CREDIT": "#/$defs/Credit",
               "KEEP_BOOKING": "#/$defs/Keep",
               "REQUEST_AMENDMENT": "#/$defs/Request",
+              "REVISE_ITINERARY": "#/$defs/ReviseItinerary",
               "SEQUENCE": "#/$defs/Sequence",
+              "UPDATE_ITINERARY_DETAILS": "#/$defs/ReviseItinerary",
+              "UPDATE_SEAT_PREFERENCE": "#/$defs/UpdateSeatPreference",
               "UPGRADE": "#/$defs/Upgrade"
             },
             "propertyName": "op"
@@ -41,7 +45,16 @@
               "$ref": "#/$defs/Price"
             },
             {
+              "$ref": "#/$defs/Credit"
+            },
+            {
               "$ref": "#/$defs/Upgrade"
+            },
+            {
+              "$ref": "#/$defs/UpdateSeatPreference"
+            },
+            {
+              "$ref": "#/$defs/ReviseItinerary"
             },
             {
               "$ref": "#/$defs/Sequence"
@@ -59,9 +72,13 @@
               "CONFIRM_AMENDMENT": "#/$defs/Confirm",
               "GUARANTEE_AMENDMENT": "#/$defs/Request",
               "IF": "#/$defs/Conditional",
+              "ISSUE_TRIP_CREDIT": "#/$defs/Credit",
               "KEEP_BOOKING": "#/$defs/Keep",
               "REQUEST_AMENDMENT": "#/$defs/Request",
+              "REVISE_ITINERARY": "#/$defs/ReviseItinerary",
               "SEQUENCE": "#/$defs/Sequence",
+              "UPDATE_ITINERARY_DETAILS": "#/$defs/ReviseItinerary",
+              "UPDATE_SEAT_PREFERENCE": "#/$defs/UpdateSeatPreference",
               "UPGRADE": "#/$defs/Upgrade"
             },
             "propertyName": "op"
@@ -80,7 +97,16 @@
               "$ref": "#/$defs/Price"
             },
             {
+              "$ref": "#/$defs/Credit"
+            },
+            {
               "$ref": "#/$defs/Upgrade"
+            },
+            {
+              "$ref": "#/$defs/UpdateSeatPreference"
+            },
+            {
+              "$ref": "#/$defs/ReviseItinerary"
             },
             {
               "$ref": "#/$defs/Sequence"
@@ -116,6 +142,28 @@
       "title": "Confirm",
       "type": "object"
     },
+    "Credit": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "const": "ISSUE_TRIP_CREDIT",
+          "title": "Op",
+          "type": "string"
+        },
+        "credit_cents": {
+          "maximum": 100000000,
+          "minimum": 1,
+          "title": "Credit Cents",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "op",
+        "credit_cents"
+      ],
+      "title": "Credit",
+      "type": "object"
+    },
     "Goal": {
       "additionalProperties": false,
       "properties": {
@@ -123,18 +171,46 @@
           "enum": [
             "amend",
             "sale",
+            "credit",
             "upgrade",
             "amend_upgrade",
+            "seat_preference",
+            "itinerary",
             "unknown"
           ],
           "title": "Type",
           "type": "string"
         },
+        "changes": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ItineraryFields"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "revision_charge_limit_cents": {
+          "anyOf": [
+            {
+              "maximum": 100000000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revision Charge Limit Cents"
+        },
         "days": {
           "anyOf": [
             {
               "maximum": 90,
-              "minimum": 1,
+              "minimum": -90,
               "type": "integer"
             },
             {
@@ -164,12 +240,171 @@
           "minimum": 0,
           "title": "Max Extra Charge Cents",
           "type": "integer"
+        },
+        "seat_preference": {
+          "anyOf": [
+            {
+              "enum": [
+                "WINDOW",
+                "AISLE",
+                "MIDDLE",
+                "TOGETHER",
+                "ANY"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Seat Preference"
         }
       },
       "required": [
         "type"
       ],
       "title": "Goal",
+      "type": "object"
+    },
+    "ItineraryFields": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 2,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Origin"
+        },
+        "destination": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 2,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Destination"
+        },
+        "departure": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Departure"
+        },
+        "return_date": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Return Date"
+        },
+        "travellers": {
+          "anyOf": [
+            {
+              "maximum": 12,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Travellers"
+        },
+        "lead_name": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 2,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lead Name"
+        },
+        "cabin": {
+          "anyOf": [
+            {
+              "enum": [
+                "ECONOMY",
+                "PREMIUM_ECONOMY",
+                "BUSINESS",
+                "FIRST"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cabin"
+        },
+        "seat_preference": {
+          "anyOf": [
+            {
+              "enum": [
+                "WINDOW",
+                "AISLE",
+                "MIDDLE",
+                "TOGETHER",
+                "ANY"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Seat Preference"
+        },
+        "airline_preference": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 2,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Airline Preference"
+        }
+      },
+      "title": "ItineraryFields",
       "type": "object"
     },
     "Keep": {
@@ -222,7 +457,7 @@
         },
         "days": {
           "maximum": 90,
-          "minimum": 1,
+          "minimum": -90,
           "title": "Days",
           "type": "integer"
         }
@@ -232,6 +467,24 @@
         "days"
       ],
       "title": "Request",
+      "type": "object"
+    },
+    "ReviseItinerary": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "enum": [
+            "REVISE_ITINERARY",
+            "UPDATE_ITINERARY_DETAILS"
+          ],
+          "title": "Op",
+          "type": "string"
+        }
+      },
+      "required": [
+        "op"
+      ],
+      "title": "ReviseItinerary",
       "type": "object"
     },
     "Sequence": {
@@ -250,9 +503,13 @@
                 "CONFIRM_AMENDMENT": "#/$defs/Confirm",
                 "GUARANTEE_AMENDMENT": "#/$defs/Request",
                 "IF": "#/$defs/Conditional",
+                "ISSUE_TRIP_CREDIT": "#/$defs/Credit",
                 "KEEP_BOOKING": "#/$defs/Keep",
                 "REQUEST_AMENDMENT": "#/$defs/Request",
+                "REVISE_ITINERARY": "#/$defs/ReviseItinerary",
                 "SEQUENCE": "#/$defs/Sequence",
+                "UPDATE_ITINERARY_DETAILS": "#/$defs/ReviseItinerary",
+                "UPDATE_SEAT_PREFERENCE": "#/$defs/UpdateSeatPreference",
                 "UPGRADE": "#/$defs/Upgrade"
               },
               "propertyName": "op"
@@ -271,7 +528,16 @@
                 "$ref": "#/$defs/Price"
               },
               {
+                "$ref": "#/$defs/Credit"
+              },
+              {
                 "$ref": "#/$defs/Upgrade"
+              },
+              {
+                "$ref": "#/$defs/UpdateSeatPreference"
+              },
+              {
+                "$ref": "#/$defs/ReviseItinerary"
               },
               {
                 "$ref": "#/$defs/Sequence"
@@ -309,9 +575,13 @@
               "CONFIRM_AMENDMENT": "#/$defs/Confirm",
               "GUARANTEE_AMENDMENT": "#/$defs/Request",
               "IF": "#/$defs/Conditional",
+              "ISSUE_TRIP_CREDIT": "#/$defs/Credit",
               "KEEP_BOOKING": "#/$defs/Keep",
               "REQUEST_AMENDMENT": "#/$defs/Request",
+              "REVISE_ITINERARY": "#/$defs/ReviseItinerary",
               "SEQUENCE": "#/$defs/Sequence",
+              "UPDATE_ITINERARY_DETAILS": "#/$defs/ReviseItinerary",
+              "UPDATE_SEAT_PREFERENCE": "#/$defs/UpdateSeatPreference",
               "UPGRADE": "#/$defs/Upgrade"
             },
             "propertyName": "op"
@@ -330,7 +600,16 @@
               "$ref": "#/$defs/Price"
             },
             {
+              "$ref": "#/$defs/Credit"
+            },
+            {
               "$ref": "#/$defs/Upgrade"
+            },
+            {
+              "$ref": "#/$defs/UpdateSeatPreference"
+            },
+            {
+              "$ref": "#/$defs/ReviseItinerary"
             },
             {
               "$ref": "#/$defs/Sequence"
@@ -347,6 +626,33 @@
         "plan"
       ],
       "title": "Strategy",
+      "type": "object"
+    },
+    "UpdateSeatPreference": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "const": "UPDATE_SEAT_PREFERENCE",
+          "title": "Op",
+          "type": "string"
+        },
+        "seat_preference": {
+          "enum": [
+            "WINDOW",
+            "AISLE",
+            "MIDDLE",
+            "TOGETHER",
+            "ANY"
+          ],
+          "title": "Seat Preference",
+          "type": "string"
+        }
+      },
+      "required": [
+        "op",
+        "seat_preference"
+      ],
+      "title": "UpdateSeatPreference",
       "type": "object"
     },
     "Upgrade": {

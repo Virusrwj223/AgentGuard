@@ -21,3 +21,17 @@ class ModelReader:
                 scores[n]=sum(int(w)*value(target) for w,target in pairs)/sum(int(w) for w,_ in pairs)
             else:scores[n]=value(expr)
         return dict(status="SUCCESS",probability=str(scores[0]),version="TEST DOUBLE")
+
+
+class TravelFixture:
+    """Deterministic fare service for tests only; never selected in application code."""
+    def enrich(self,draft):
+        import time
+        from app.trip_intake import FIELDS
+        updated=dict(draft)
+        for field in ("origin","destination"):
+            if updated.get(field):
+                updated[field+"_location"]={"name":updated[field],"iata":"SIN" if field=="origin" else "LON"}
+        if all(updated.get(f) for f in FIELDS):
+            updated["fare"]={"amount_cents":updated["nights"]*updated["travellers"]*12000,"expires":time.time()+300,"live":False,"source":"test fixture"}
+        return updated,[]

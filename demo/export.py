@@ -25,4 +25,5 @@ def main():
         p["request_id"]="REPLACE_WITH_ACTIVE_REQUEST"
         (ROOT/"demo"/"amend-proposal.json").write_text(json.dumps(p,indent=2),encoding="utf-8")
         (ROOT/"shared"/"customer-result.schema.json").write_text(json.dumps(CustomerResult.model_json_schema(),indent=2),encoding="utf-8")
+        (ROOT/"shared"/"proposal.schema.json").write_text(json.dumps(Proposal.model_json_schema(),indent=2),encoding="utf-8")
 if __name__=="__main__":main()
